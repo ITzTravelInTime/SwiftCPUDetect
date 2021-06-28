@@ -93,7 +93,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         let mode = AppExecutionMode.current()
         
         if arch == .intel64 && mode == .emulated{
-            return arm64e
+            return arm64
         }
         
         if arch.isPPC() && mode == .emulated{
@@ -121,7 +121,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     
     ///Gets if the current istance is an Apple Silicon cpu
     public func isAppleSilicon() -> Bool{
-        return self == .arm64e
+        return self == .arm64e || self == .arm64
     }
     
     ///Gets if the current istance is an Arm cpu
