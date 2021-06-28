@@ -1,5 +1,5 @@
 # SwiftCPUDetect
-Swift Library to detect the current CPU Architecture and if the current process.
+Swift Library to detect the current CPU Architecture and if the current process is running under Rosetta.
 
 # Features
 
@@ -24,9 +24,9 @@ print("My computer is running using the \(CpuArchitecture.actualCurrent()?.rawVa
 
 # What apps/programs is this Library intended for?
 
-This library should be used by Swift apps/programs, that needs to operate differently depending on wich cpu architecture are currently running on and if they are running using Rosetta.
+This library should be used by Swift apps/programs, that needs to operate differently depending on which cpu architecture are currently running on and if they are running using Rosetta.
 
-This code should work across multiple platforms based on the XNU kernel, but it has been tested only on macOS/OS X.
+This code should work across multiple platforms based on the XNU kernel and that provvides the necessary function calls usinf the Foundation module, but it has been tested to work only on macOS/OS X.
 
 # About the project:
 
