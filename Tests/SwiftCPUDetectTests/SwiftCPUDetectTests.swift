@@ -1,5 +1,5 @@
     import XCTest
-    @testable import Swift_CPUDetect
+    @testable import SwiftCPUDetect
 
     final class Swift_CPUDetectTests: XCTestCase {
         func testExample() {

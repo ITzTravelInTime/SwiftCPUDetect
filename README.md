@@ -37,4 +37,6 @@ Also having this as it's own library allows for code to be updated separately an
 # Credits:
 
 ITzTravelInTime (Pietro Caruso) - Project creator
+Original source for the methods used to perform the detections: https://developer.apple.com/forums/thread/652667
+
 

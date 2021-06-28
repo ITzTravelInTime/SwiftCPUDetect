@@ -16,25 +16,36 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
     
     ///Gets if the current process is running natively or emulated
     static func current() -> AppExecutionMode{
-        var ret: Int32 = 0
-        var size = ret.bitWidth / 8
-        
-        let result = sysctlbyname("sysctl.proc_translated", &ret, &size, nil, 0)
-        
-        if result == -1 {
-            if (errno == ENOENT){
-                return AppExecutionMode.native
-            }
-            return AppExecutionMode.unkown
+        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
+        struct MEM{
+            static var state: AppExecutionMode? = nil
         }
         
-        return AppExecutionMode(rawValue: ret) ?? .unkown
+        if MEM.state == nil {
+            var ret: Int32 = 0
+            var size = ret.bitWidth / 8
+            
+            let result = sysctlbyname("sysctl.proc_translated", &ret, &size, nil, 0)
+            
+            if result == -1 {
+                if (errno == ENOENT){
+                    MEM.state = AppExecutionMode.native
+                }else{
+                    MEM.state = AppExecutionMode.unkown
+                }
+            }else{
+                MEM.state = AppExecutionMode(rawValue: ret) ?? .unkown
+            }
+            
+        }
+        
+        return MEM.state!
     }
 }
 
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
 public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
-    case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there
+    case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there, so a bunch of PPC targets are included, if one is missing feel free to add it using a pull request.
     case ppcG1   = "ppc601"
     case ppcG2   = "ppc604"
     case ppcG3   = "ppc750"
@@ -60,7 +71,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     
     ///Gets the current architecture used by the current process
     public static func current() -> CpuArchitecture?{
-        //stores the obtained value so useless re-detections are avoided
+        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
             static var state: CpuArchitecture? = nil
         }
