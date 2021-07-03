@@ -8,6 +8,18 @@
 
 import Foundation
 
+///Enables/Disables printing for this library's fucntions
+public var swiftCPUDetectShouldPrint: Bool = true
+
+///Prints the output for this library
+///
+///You can disable printing by setting the `swiftCPUDetectShouldPrint` to false
+fileprivate func aprint(_ str: String){
+    if swiftCPUDetectShouldPrint{
+        print("[SwiftCPUDetect] \(str)")
+    }
+}
+
 ///This enum is used to determinate if the current process is running as emulated or native
 public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
     case unkown = -1
@@ -37,6 +49,7 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
                 MEM.state = AppExecutionMode(rawValue: ret) ?? .unkown
             }
             
+            aprint("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
         }
         
         return MEM.state!
@@ -66,7 +79,11 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         guard result == EXIT_SUCCESS else { return nil }
         let data = Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN))
         guard let identifier = String(bytes: data, encoding: .ascii) else { return nil }
-        return identifier.trimmingCharacters(in: .controlCharacters)
+        let ret = identifier.trimmingCharacters(in: .controlCharacters)
+        
+        aprint("Detected raw arch is: \(ret)")
+        
+        return ret
     }
     
     ///Gets the current architecture used by the current process
@@ -79,7 +96,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         if MEM.state == nil{
             guard let arch = currentRaw() else { return nil }
             
-            print("Detected cpu architecture of the current process is: \(arch)")
+            aprint("Detected cpu architecture of the current process is: \(arch)")
             
             MEM.state = CpuArchitecture(rawValue: arch)
         }
@@ -92,16 +109,62 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         guard let arch = current() else { return nil }
         let mode = AppExecutionMode.current()
         
+        //Resetta 2 does not support 32 bit intel apps
         if arch == .intel64 && mode == .emulated{
+            aprint("The actual cpu architecture of the current machine is: \(arm64.rawValue)")
             return arm64
         }
         
-        if arch.isPPC() && mode == .emulated{
+        if arch.isPPC32() && mode == .emulated{
+            aprint("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
             return intel32
         }
         
+        if arch.isPPC64() && mode == .emulated{
+            aprint("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
+            return intel64
+        }
+        
+        aprint("The actual cpu architecture of the current machine is: \(arch.rawValue)")
         return arch
         
+    }
+    
+    ///Returns the cpu architectures supported by the current program/app
+    public static func currentExecutableArchitectures() -> [CpuArchitecture]{
+        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
+        struct MEM{
+            static var status: [CpuArchitecture]!
+        }
+        
+        if MEM.status == nil{
+            var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64]
+            
+            if #available(OSX 11.0, *) {
+                supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
+            }else{
+                supportedArchs[16777228] = arm64
+            }
+            
+            let raw = Bundle.main.executableArchitectures ?? [NSNumber]()
+            
+            if raw.isEmpty{
+                aprint("Support for the executable's arch feature is usable only on bundle types! \n    An empry list will be returned")
+            }else{
+                aprint("Listing cpu architectures supported by the current bundle/app: ")
+            }
+            
+            MEM.status = []
+            
+            for arch in supportedArchs{
+                if raw.contains(NSNumber(value: arch.key)){
+                    MEM.status!.append(arch.value)
+                    aprint("    \(arch.value.rawValue)")
+                }
+            }
+        }
+        
+        return MEM.status
     }
     
     ///Gets if the current istance is a powerPC cpu
@@ -127,5 +190,10 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     ///Gets if the current istance is an Arm cpu
     public func isArm() -> Bool{
         return self.rawValue.starts(with: "arm")
+    }
+    
+    ///Gets if the current instance is an intel cpu
+    public func isIntel() -> Bool{
+        return self == .intel32 || self == .intel64
     }
 }
