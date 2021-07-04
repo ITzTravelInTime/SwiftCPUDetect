@@ -8,18 +8,6 @@
 
 import Foundation
 
-///Enables/Disables printing for this library's fucntions
-public var swiftCPUDetectShouldPrint: Bool = true
-
-///Prints the output for this library
-///
-///You can disable printing by setting the `swiftCPUDetectShouldPrint` to false
-fileprivate func aprint(_ str: String){
-    if swiftCPUDetectShouldPrint{
-        print("[SwiftCPUDetect] \(str)")
-    }
-}
-
 ///This enum is used to determinate if the current process is running as emulated or native
 public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
     case unkown = -1
@@ -49,7 +37,7 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
                 MEM.state = AppExecutionMode(rawValue: ret) ?? .unkown
             }
             
-            aprint("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
+            Printer.print("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
         }
         
         return MEM.state!
@@ -81,7 +69,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         guard let identifier = String(bytes: data, encoding: .ascii) else { return nil }
         let ret = identifier.trimmingCharacters(in: .controlCharacters)
         
-        aprint("Detected raw arch is: \(ret)")
+        Printer.print("Detected raw arch is: \(ret)")
         
         return ret
     }
@@ -96,7 +84,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         if MEM.state == nil{
             guard let arch = currentRaw() else { return nil }
             
-            aprint("Detected cpu architecture of the current process is: \(arch)")
+            Printer.print("Detected cpu architecture of the current process is: \(arch)")
             
             MEM.state = CpuArchitecture(rawValue: arch)
         }
@@ -111,21 +99,21 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         
         //Resetta 2 does not support 32 bit intel apps
         if arch == .intel64 && mode == .emulated{
-            aprint("The actual cpu architecture of the current machine is: \(arm64.rawValue)")
+            Printer.print("The actual cpu architecture of the current machine is: \(arm64.rawValue)")
             return arm64
         }
         
         if arch.isPPC32() && mode == .emulated{
-            aprint("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
+            Printer.print("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
             return intel32
         }
         
         if arch.isPPC64() && mode == .emulated{
-            aprint("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
+            Printer.print("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
             return intel64
         }
         
-        aprint("The actual cpu architecture of the current machine is: \(arch.rawValue)")
+        Printer.print("The actual cpu architecture of the current machine is: \(arch.rawValue)")
         return arch
         
     }
@@ -149,9 +137,9 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             let raw = Bundle.main.executableArchitectures ?? [NSNumber]()
             
             if raw.isEmpty{
-                aprint("Support for the executable's arch feature is usable only on bundle types! \n    An empry list will be returned")
+                Printer.print("Support for the executable's arch feature is usable only on bundle types! \n    An empry list will be returned")
             }else{
-                aprint("Listing cpu architectures supported by the current bundle/app: ")
+                Printer.print("Listing cpu architectures supported by the current bundle/app: ")
             }
             
             MEM.status = []
@@ -159,7 +147,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             for arch in supportedArchs{
                 if raw.contains(NSNumber(value: arch.key)){
                     MEM.status!.append(arch.value)
-                    aprint("    \(arch.value.rawValue)")
+                    Printer.print("    \(arch.value.rawValue)")
                 }
             }
         }
