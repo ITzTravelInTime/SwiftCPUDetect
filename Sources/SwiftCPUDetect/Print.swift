@@ -15,7 +15,7 @@ open class GeneralPrinter {
     
     open class func print( _ str: String){
         if enabled{
-            print("\(prefix) \(str)")
+            Swift.print("\(prefix) \(str)")
         }
     }
 }
