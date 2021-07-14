@@ -7,6 +7,9 @@
 
 import Foundation
 
+//the library ITzTravelInTime/SwiftLoggedPrint can be used instead of this class
+
+///This class manages prints
 open class GeneralPrinter {
     public static var enabled: Bool = true
     open class var prefix: String{
@@ -20,6 +23,7 @@ open class GeneralPrinter {
     }
 }
 
+///Subclass of the printer class adding the custom prefix
 internal class Printer: GeneralPrinter{
     override class var prefix: String{
         return "[SwiftCPUDetect]"

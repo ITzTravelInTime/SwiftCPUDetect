@@ -1,75 +1,46 @@
 //
 //  SwiftCPUDetect.swift
-//  TINU
 //
 //  Created by Pietro Caruso on 21/05/21.
-//  Copyright © 2021 Pietro Caruso. All rights reserved.
 //
 
 import Foundation
 
-///This enum is used to determinate if the current process is running as emulated or native
-public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
-    case unkown = -1
-    case native = 0
-    case emulated = 1
-    
-    ///Gets if the current process is running natively or emulated
-    static func current() -> AppExecutionMode{
-        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
-        struct MEM{
-            static var state: AppExecutionMode? = nil
-        }
-        
-        if MEM.state == nil {
-            var ret: Int32 = 0
-            var size = ret.bitWidth / 8
-            
-            let result = sysctlbyname("sysctl.proc_translated", &ret, &size, nil, 0)
-            
-            if result == -1 {
-                if (errno == ENOENT){
-                    MEM.state = AppExecutionMode.native
-                }else{
-                    MEM.state = AppExecutionMode.unkown
-                }
-            }else{
-                MEM.state = AppExecutionMode(rawValue: ret) ?? .unkown
-            }
-            
-            Printer.print("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
-        }
-        
-        return MEM.state!
-    }
-}
-
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
 public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there, so a bunch of PPC targets are included, if one is missing feel free to add it using a pull request.
-    case ppcG1   = "ppc601"
-    case ppcG2   = "ppc604"
     case ppcG3   = "ppc750"
-    case ppcG4   = "ppc7400"
-    case ppcG5   = "ppc970"
+    case ppcG4   = "ppc7450"
     case ppc64   = "ppc64"
+    case ppcG5   = "ppc970"
     case intel32 = "i386"   //fist gens of intel macs
     case intel64 = "x86_64" //most intel macs from 2008 on
     case arm     = "arm"
     case arm64   = "arm64"
-    case arm64e  = "arm64e" //apple silicon
-    
-    //TODO: Add a function to get the current cpu's marketing name and model.
-    
+
+    ///Gets the raw value for the current architecture
     public static func currentRaw() -> String? {
+        
+        var ret: String?
+        
+        /*#if os(macOS)
+        
+        //Only works well on  macOS, on other platforms just returns tha device model
         var sysinfo = utsname()
         let result = uname(&sysinfo)
         guard result == EXIT_SUCCESS else { return nil }
         let data = Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN))
         guard let identifier = String(bytes: data, encoding: .ascii) else { return nil }
-        let ret = identifier.trimmingCharacters(in: .controlCharacters)
         
-        Printer.print("Detected raw arch is: \(ret)")
+        ret = CpuArchitecture(rawValue: identifier.trimmingCharacters(in: .controlCharacters).lowercased() )
+        
+        #else*/
+        
+        ret = current()?.rawValue
+        
+        //#endif
+        
+        Printer.print("Detected raw arch is: \(ret ?? "[No arch detected]")")
         
         return ret
     }
@@ -82,11 +53,67 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         }
         
         if MEM.state == nil{
-            guard let arch = currentRaw() else { return nil }
             
-            Printer.print("Detected cpu architecture of the current process is: \(arch)")
+            var ret: CpuArchitecture?
             
-            MEM.state = CpuArchitecture(rawValue: arch)
+            var size = size_t()
+            var type = cpu_type_t()
+            var subtype = cpu_subtype_t()
+            var family = UInt32()
+                  
+            size = MemoryLayout.size(ofValue: type)
+            sysctlbyname("hw.cputype", &type, &size, nil, 0);
+            
+            Printer.print("Detected CPU type number: \(type)")
+
+            size = MemoryLayout.size(ofValue: subtype)
+            sysctlbyname("hw.cpusubtype", &subtype, &size, nil, 0);
+            
+            Printer.print("Detected CPU subtype number: \(subtype)")
+            
+            size = MemoryLayout.size(ofValue: family)
+            sysctlbyname("hw.cpufamily", &family, &size, nil, 0);
+            
+            Printer.print("Detected CPU family number: \(family)")
+            
+            if type == CPU_TYPE_X86{
+                if subtype & CPU_SUBTYPE_X86_64_ALL != 0 || HWInfo.CPU.is64Bit(){
+                    ret = .intel64;
+                }else{
+                    ret = .intel32
+                }
+            }else if type == CPU_TYPE_X86_64{
+                ret = .intel64;
+            }else if type == CPU_TYPE_ARM {
+                if subtype & CPU_SUBTYPE_ARM64_ALL != 0{
+                    ret = .arm64
+                }else{
+                    ret = .arm
+                }
+            }else if type == CPU_TYPE_ARM64{
+                ret = .arm64
+            }else if type == CPU_TYPE_POWERPC{
+                if subtype & CPU_SUBTYPE_POWERPC_750 != 0 || family & UInt32(CPUFAMILY_POWERPC_G3) != 0 {
+                    ret = .ppcG3
+                }else if subtype & CPU_SUBTYPE_POWERPC_7450 != 0 || family & UInt32(CPUFAMILY_POWERPC_G4) != 0 {
+                    ret = .ppcG4
+                }else if subtype & CPU_SUBTYPE_POWERPC_970 != 0 || family & UInt32(CPUFAMILY_POWERPC_G5) != 0{
+                    ret = .ppcG5
+                }else{
+                    ret = .ppc
+                }
+            }else if type == CPU_TYPE_POWERPC64{
+                if subtype & CPU_SUBTYPE_POWERPC_970 != 0 || family & UInt32(CPUFAMILY_POWERPC_G5) != 0{
+                    ret = .ppcG5
+                }else{
+                    ret = .ppc64
+                }
+            }
+            
+            
+            Printer.print("Detected cpu architecture of the current process is: \(ret?.rawValue ?? "[Arch not detected]")")
+            
+            MEM.state = ret
         }
         
         return MEM.state
@@ -126,7 +153,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         }
         
         if MEM.status == nil{
-            var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64]
+            var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64, 12: arm]
             
             if #available(OSX 11.0, iOS 14.0, *, watchOS 7.0, tvOS 14.0) {
                 supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
@@ -172,7 +199,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     
     ///Gets if the current istance is an Apple Silicon cpu
     public func isAppleSilicon() -> Bool{
-        return self == .arm64e || self == .arm64
+        return self == .arm64
     }
     
     ///Gets if the current istance is an Arm cpu

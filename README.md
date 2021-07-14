@@ -4,27 +4,72 @@ Swift Library to detect the current CPU Architecture and if the current process 
 # Features
 
 - Get if the current process is ruiing using Rosetta (aka as emulated) using the `AppExecutionMode` enum
-- Get the Cpu architecture used by the current process and the architecture used by the computer using the `CpuArchitecture`  enum
+- Get the Cpu architecture used by the current process, the computer or the ones supported by the current executable by using the `CpuArchitecture`  enum
+- Get CPU and system info using the `HWInfo` class
 
 # Usage
 
 Usage should be pretty simple, just take a look at the source code, here is also a very usefoul example usage:
 
+Also check out the DEMO playground included inside the project.
+
 ```swift
 
 import SwiftCPUDetect
 
+//Disabled debug prints from the library
+SwiftCPUDetect.GeneralPrinter.enabled = false
+
+var str = " "
+
+//those prints gets various info about the cpu
+#if os(macOS)
+
+print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
+print("Stepping for CPU is \"\(HWInfo.CPU.stepping() ?? 255)\"")
+print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
+
+for info in HWInfo.CPU.featuresList() ?? []{
+    str += " \(info),"
+}
+
+print("Features for CPU: \(str.dropLast())")
+
+print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
+
+#endif
+
+print("This cpu has \"\(HWInfo.CPU.coresCount() ?? 255)\" cores")
+print("This cpu has \"\(HWInfo.CPU.threadsCount() ?? 255)\" threads")
+print("This cpu is \"\(HWInfo.CPU.is64Bit() ? "64" : "32" )\" bits")
+
+//Prints the ammount of RAM in bytes
+print("This computer has \(HWInfo.ramAmmount() ?? 0) Bytes of RAM")
+
+//Prints the current execution mode
 print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
 
+//Prints the architecture of the current process
 print("My app is running using the \(CpuArchitecture.current()?.rawValue ?? "[Can't detect architecture]") architecture")
 
+//Prints the architecture of the current computer
 print("My computer is running using the \(CpuArchitecture.actualCurrent()?.rawValue ?? "[Can't detect architecture]") architecture")
+
+//Prints the architectures supported by the current executable
+str = " "
+
+for arch in CpuArchitecture.currentExecutableArchitectures(){
+    str += " " + arch.rawValue + ","
+}
+
+print("My app supports those architectures: " + str.dropLast())
+
 
 ```
 
 # What apps/programs is this Library intended for?
 
-This library should be used by Swift apps/programs, that needs to operate differently depending on which cpu architecture are currently running on and if they are running using Rosetta.
+This library should be used by Swift apps/programs, that needs to know system information like the current cpu architecture, if the current app/program is running using Rosetta or just needs some basic system info.
 
 This code should work across multiple platforms based on the XNU kernel and that provvides the necessary function calls usinf the Foundation module, but it has been tested to work only on macOS/OS X.
 

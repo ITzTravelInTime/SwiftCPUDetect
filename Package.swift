@@ -5,6 +5,13 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftCPUDetect",
+    platforms: [
+        //Provviding this requirements is needed in order to offer the widest compatibility possible, not provviding requirements will limit this stuff to later versions
+        .iOS("7.0"),
+        .macOS("10.9"),
+        .watchOS(.v2),
+        .tvOS(.v9)
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -23,6 +30,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "SwiftCPUDetectTests",
-            dependencies: ["SwiftCPUDetect"]),
+            dependencies: ["SwiftCPUDetect"])
     ]
 )
