@@ -128,7 +128,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         if MEM.status == nil{
             var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64]
             
-            if #available(OSX 11.0, *) {
+            if #available(OSX 11.0, iOS 14.0, *, watchOS 7.0, tvOS 14.0) {
                 supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
             }else{
                 supportedArchs[16777228] = arm64
