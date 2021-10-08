@@ -71,7 +71,7 @@ print("My app supports those architectures: " + str.dropLast())
 
 This library should be used by Swift apps/programs, that needs to know system information like the current cpu architecture, if the current app/program is running using Rosetta or just needs some basic system info.
 
-This code should work across multiple platforms based on the XNU kernel and that provvides the necessary function calls usinf the Foundation module, but it has been tested to work only on macOS/OS X.
+This code should work across multiple platforms based on the XNU kernel and that provvides the necessary function calls using the Foundation module, but it has been tested to work only on macOS/OS X and iOS.
 
 # About the project:
 
@@ -86,7 +86,7 @@ Also having this as it's own library allows for code to be updated separately an
 
 # Contacts
 
- - ITzTravelInTime (Pietro Caruso): piecaruso97@gmail.com
+ - ITzTravelInTime (Pietro Caruso, project creator): piecaruso97@gmail.com
 
 # Copyright
 
