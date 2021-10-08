@@ -45,7 +45,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         return ret
     }
     
-    ///Gets the current architecture used by the current process
+    ///Gets the cpu architecture used by the current process
     public static func current() -> CpuArchitecture?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
@@ -119,8 +119,14 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         return MEM.state
     }
     
-    ///Gets the architecture of the current machine
+    ///DEPRECATED - Gets the cpu architecture used by the current device
+    @available(*, deprecated, renamed: "machineCurrent")
     public static func actualCurrent() -> CpuArchitecture?{
+        return machineCurrent()
+    }
+    
+    ///Gets the cpu architecture used by the current device
+    public static func machineCurrent() -> CpuArchitecture?{
         guard let arch = current() else { return nil }
         let mode = AppExecutionMode.current()
         

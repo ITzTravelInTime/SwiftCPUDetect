@@ -36,7 +36,7 @@ print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulate
 print("My app is running using the \(CpuArchitecture.current()?.rawValue ?? "[Can't detect architecture]") architecture")
 
 //Prints the architecture of the current computer
-print("My computer is running using the \(CpuArchitecture.actualCurrent()?.rawValue ?? "[Can't detect architecture]") architecture")
+print("My computer is running using the \(CpuArchitecture.machineCurrent()?.rawValue ?? "[Can't detect architecture]") architecture")
 
 //Prints the architectures supported by the current executable
 str = " "
