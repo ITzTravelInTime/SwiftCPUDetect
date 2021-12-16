@@ -3,7 +3,7 @@ Swift Library to detect the current CPU Architecture and if the current process 
 
 # Features
 
-- Get if the current process is ruiing using Rosetta (aka as emulated) using the `AppExecutionMode` enum
+- Get if the current process is running using Rosetta (aka as emulated) using the `AppExecutionMode` enum
 - Get the Cpu architecture used by the current process, the computer or the ones supported by the current executable by using the `CpuArchitecture`  enum
 - Get CPU and system info using the `HWInfo` class
 
