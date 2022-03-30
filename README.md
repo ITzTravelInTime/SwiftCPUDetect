@@ -26,10 +26,13 @@ var str = " "
 #if os(macOS)
 
 print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
-print("Stepping for CPU is \"\(HWInfo.CPU.stepping() ?? 255)\"")
-print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
 
-for info in HWInfo.CPU.featuresList() ?? []{
+print("Stepping for CPU is \"\(HWInfo.CPU.stepping() ?? 255)\"") //intel only
+
+print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
+print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" cores for each package")
+
+for info in HWInfo.CPU.featuresList() ?? []{ //intel only
     str += " \(info),"
 }
 
@@ -64,6 +67,9 @@ for arch in CpuArchitecture.currentExecutableArchitectures(){
 
 print("My app supports those architectures: " + str.dropLast())
 
+//Example for fetching values using the Sysctl namespace class (intel only)
+print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor", bufferSize: 256) ?? "Apple silicon or no vendor detected")")
+
 
 ```
 
@@ -90,7 +96,8 @@ Also having this as it's own library allows for code to be updated separately an
 
 # Copyright
 
-Copyright (C) 2021 Pietro Caruso
+SwiftCPUDetect a Swift library to collect system and current process info.
+Copyright (C) 2022 Pietro Caruso
 
 This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 

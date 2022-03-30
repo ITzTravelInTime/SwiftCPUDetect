@@ -1,8 +1,13 @@
-//
-//  SwiftCPUDetect.swift
-//
-//  Created by Pietro Caruso on 21/05/21.
-//
+/*
+ SwiftCPUDetect a Swift library to collect system and current process info.
+ Copyright (C) 2022 Pietro Caruso
+
+ This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 import Foundation
 
@@ -56,11 +61,34 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             
             var ret: CpuArchitecture?
             
-            var size = size_t()
-            var type = cpu_type_t()
-            var subtype = cpu_subtype_t()
-            var family = UInt32()
+            guard let type: cpu_type_t = Sysctl.HW.getInteger("cputype") else {
+                Printer.print("ERROR: Can't get the cpu type value")
+                return nil
+            }
+            
+            Printer.print("Detected CPU type number: \(type)")
+            
+            guard let subtype: cpu_subtype_t = Sysctl.HW.getInteger("cpusubtype") else{
+                Printer.print("ERROR: Can't get the cpu subtype value")
+                return nil
+            }
+            
+            Printer.print("Detected CPU subtype number: \(subtype)")
+            
+            guard let family: UInt32 = Sysctl.HW.getInteger("cpufamily") else{
+                Printer.print("ERROR: Can't get the cpu family value")
+                return nil
+            }
+            
+            Printer.print("Detected CPU family number: \(family)")
                   
+            /*
+             var size = size_t()
+             
+             var type = cpu_type_t()
+             var subtype = cpu_subtype_t()
+             var family = UInt32()
+             
             size = MemoryLayout.size(ofValue: type)
             sysctlbyname("hw.cputype", &type, &size, nil, 0);
             
@@ -75,6 +103,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             sysctlbyname("hw.cpufamily", &family, &size, nil, 0);
             
             Printer.print("Detected CPU family number: \(family)")
+            */
             
             if type == CPU_TYPE_X86{
                 if subtype & CPU_SUBTYPE_X86_64_ALL != 0 || HWInfo.CPU.is64Bit(){
@@ -119,31 +148,27 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         return MEM.state
     }
     
-    ///DEPRECATED - Gets the cpu architecture used by the current device
-    @available(*, deprecated, renamed: "machineCurrent")
-    public static func actualCurrent() -> CpuArchitecture?{
-        return machineCurrent()
-    }
-    
     ///Gets the cpu architecture used by the current device
     public static func machineCurrent() -> CpuArchitecture?{
         guard let arch = current() else { return nil }
         let mode = AppExecutionMode.current()
         
-        //Resetta 2 does not support 32 bit intel apps
-        if arch == .intel64 && mode == .emulated{
-            Printer.print("The actual cpu architecture of the current machine is: \(arm64.rawValue)")
-            return arm64
-        }
-        
-        if arch.isPPC32() && mode == .emulated{
-            Printer.print("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
-            return intel32
-        }
-        
-        if arch.isPPC64() && mode == .emulated{
-            Printer.print("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
-            return intel64
+        if mode == .emulated{
+            //Resetta 2 does not support 32 bit intel apps
+            if arch == .intel64{
+                Printer.print("The actual cpu architecture of the current machine is: \(arm64.rawValue)")
+                return arm64
+            }
+            
+            if arch.isPPC32(){
+                Printer.print("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
+                return intel32
+            }
+            
+            if arch.isPPC64(){
+                Printer.print("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
+                return intel64
+            }
         }
         
         Printer.print("The actual cpu architecture of the current machine is: \(arch.rawValue)")
@@ -161,7 +186,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         if MEM.status == nil{
             var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64, 12: arm]
             
-            if #available(OSX 11.0, iOS 14.0, *, watchOS 7.0, tvOS 14.0) {
+            if #available(macOS 11.0, iOS 14.0, *, watchOS 7.0, tvOS 14.0) {
                 supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
             }else{
                 supportedArchs[16777228] = arm64

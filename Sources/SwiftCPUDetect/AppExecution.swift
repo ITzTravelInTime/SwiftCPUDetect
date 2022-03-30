@@ -1,9 +1,13 @@
-//
-//  File.swift
-//  
-//
-//  Created by Pietro Caruso on 15/07/21.
-//
+/*
+ SwiftCPUDetect a Swift library to collect system and current process info.
+ Copyright (C) 2022 Pietro Caruso
+
+ This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 import Foundation
 
@@ -21,19 +25,18 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
         }
         
         if MEM.state == nil {
-            var ret: Int32 = 0
-            var size = ret.bitWidth / 8
+            let fetch: (value: Int32?, score: Int32) = Sysctl.Sysctl.getIntegerWithFetchScore("proc_translated")
             
-            let result = sysctlbyname("sysctl.proc_translated", &ret, &size, nil, 0)
-            
-            if result == -1 {
+            if fetch.score == -1 {
                 if (errno == ENOENT){
                     MEM.state = AppExecutionMode.native
                 }else{
                     MEM.state = AppExecutionMode.unkown
                 }
+            }else if let raw = fetch.value{
+                MEM.state = AppExecutionMode(rawValue: raw) ?? .unkown
             }else{
-                MEM.state = AppExecutionMode(rawValue: ret) ?? .unkown
+                MEM.state = .unkown
             }
             
             Printer.print("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
