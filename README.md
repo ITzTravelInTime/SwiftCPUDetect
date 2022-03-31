@@ -20,18 +20,15 @@ import SwiftCPUDetect
 //Disabled debug prints from the library
 SwiftCPUDetect.GeneralPrinter.enabled = false
 
-var str = " "
-
 //those prints gets various info about the cpu
 #if os(macOS)
 
 print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
 
-print("Stepping for CPU is \"\(HWInfo.CPU.stepping() ?? 255)\"") //intel only
-
 print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
 print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" cores for each package")
 
+var str = " "
 for info in HWInfo.CPU.featuresList() ?? []{ //intel only
     str += " \(info),"
 }
@@ -44,7 +41,7 @@ print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
 
 print("This cpu has \"\(HWInfo.CPU.coresCount() ?? 255)\" cores")
 print("This cpu has \"\(HWInfo.CPU.threadsCount() ?? 255)\" threads")
-print("This cpu is \"\(HWInfo.CPU.is64Bit() ? "64" : "32" )\" bits")
+print("This cpu is \(HWInfo.CPU.is64Bit() ? "64" : "32" ) bits")
 
 //Prints the ammount of RAM in bytes
 print("This computer has \(HWInfo.ramAmmount() ?? 0) Bytes of RAM")
@@ -69,7 +66,6 @@ print("My app supports those architectures: " + str.dropLast())
 
 //Example for fetching values using the Sysctl namespace class (intel only)
 print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor", bufferSize: 256) ?? "Apple silicon or no vendor detected")")
-
 
 ```
 

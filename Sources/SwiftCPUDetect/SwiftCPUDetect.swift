@@ -16,8 +16,9 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there, so a bunch of PPC targets are included, if one is missing feel free to add it using a pull request.
     case ppcG3   = "ppc750"
     case ppcG4   = "ppc7450"
-    case ppc64   = "ppc64"
     case ppcG5   = "ppc970"
+    case ppc64   = "ppc64"
+    case ppc64le = "ppc64le"
     case intel32 = "i386"   //fist gens of intel macs
     case intel64 = "x86_64" //most intel macs from 2008 on
     case arm     = "arm"
@@ -105,37 +106,39 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             Printer.print("Detected CPU family number: \(family)")
             */
             
-            if type == CPU_TYPE_X86{
+            if type & CPU_TYPE_X86_64 != 0{
+                ret = .intel64;
+            }else if type & CPU_TYPE_X86 != 0 || type & CPU_TYPE_I386 != 0{
                 if subtype & CPU_SUBTYPE_X86_64_ALL != 0 || HWInfo.CPU.is64Bit(){
                     ret = .intel64;
                 }else{
                     ret = .intel32
                 }
-            }else if type == CPU_TYPE_X86_64{
-                ret = .intel64;
-            }else if type == CPU_TYPE_ARM {
+            }else if type & CPU_TYPE_ARM64 != 0{
+                ret = .arm64
+            }else if type & CPU_TYPE_ARM != 0{
                 if subtype & CPU_SUBTYPE_ARM64_ALL != 0{
                     ret = .arm64
                 }else{
                     ret = .arm
                 }
-            }else if type == CPU_TYPE_ARM64{
-                ret = .arm64
-            }else if type == CPU_TYPE_POWERPC{
+            }else if type & CPU_TYPE_POWERPC64 != 0{
+                if subtype & CPU_SUBTYPE_POWERPC_970 != 0 || family & UInt32(CPUFAMILY_POWERPC_G5) != 0{
+                    ret = .ppcG5
+                }else if subtype & CPU_SUBTYPE_LITTLE_ENDIAN != 0 {
+                    ret = .ppc64le
+                }else{
+                    ret = .ppc64
+                }
+            }else if type & CPU_TYPE_POWERPC != 0{
                 if subtype & CPU_SUBTYPE_POWERPC_750 != 0 || family & UInt32(CPUFAMILY_POWERPC_G3) != 0 {
                     ret = .ppcG3
-                }else if subtype & CPU_SUBTYPE_POWERPC_7450 != 0 || family & UInt32(CPUFAMILY_POWERPC_G4) != 0 {
+                }else if subtype & CPU_SUBTYPE_POWERPC_7450 != 0 || family & UInt32(CPUFAMILY_POWERPC_G4) != 0 || subtype & CPU_SUBTYPE_POWERPC_7400 != 0{
                     ret = .ppcG4
                 }else if subtype & CPU_SUBTYPE_POWERPC_970 != 0 || family & UInt32(CPUFAMILY_POWERPC_G5) != 0{
                     ret = .ppcG5
                 }else{
                     ret = .ppc
-                }
-            }else if type == CPU_TYPE_POWERPC64{
-                if subtype & CPU_SUBTYPE_POWERPC_970 != 0 || family & UInt32(CPUFAMILY_POWERPC_G5) != 0{
-                    ret = .ppcG5
-                }else{
-                    ret = .ppc64
                 }
             }
             
@@ -160,6 +163,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
                 return arm64
             }
             
+            //May cause bad detections
             if arch.isPPC32(){
                 Printer.print("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
                 return intel32

@@ -60,6 +60,14 @@ public final class Sysctl: SysctlFetch{
     
     public final class HW: SysctlFetch{
         public static let namePrefix: String = "hw."
+        
+        public final class Optional: SysctlFetch{
+            public static let namePrefix: String = HW.namePrefix + "optional."
+        }
+        
+        public final class Perflevel10: SysctlFetch{
+            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel10."
+        }
     }
     
     #if os(macOS)
@@ -67,7 +75,67 @@ public final class Sysctl: SysctlFetch{
         public static let namePrefix: String = "machdep."
         
         public final class CPU: SysctlFetch{
-            public static let namePrefix: String = "machdep.cpu."
+            public static let namePrefix: String = Machdep.namePrefix + "cpu."
+            
+            public final class Address_bits: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "address_bits."
+            }
+            
+            public final class TSC_ccc: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "tsc_ccc."
+            }
+            
+            public final class Mwait: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "mwait."
+            }
+            
+            public final class Thermal: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "thermal."
+            }
+            
+            public final class Xsave: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "xsave."
+            }
+            
+            public final class Arch_perf: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "arch_perf."
+            }
+            
+            public final class Cache: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "cache."
+            }
+            
+            public final class Tlb: SysctlFetch{
+                public static let namePrefix: String = Machdep.CPU.namePrefix + "tlb."
+            }
+        }
+        
+        public final class Pmap: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "pmap."
+        }
+        
+        public final class Vectors: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "vectors."
+        }
+        
+        public final class Memmap: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "memmap."
+        }
+        
+        public final class TSC: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "tsc."
+            
+            public final class Nanotime: SysctlFetch{
+                public static let namePrefix: String = Machdep.TSC.namePrefix + "nanotime."
+            }
+        }
+        
+        public final class Misc: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "misc."
+        }
+        
+        public final class XCPM: SysctlFetch{
+            public static let namePrefix: String = Machdep.namePrefix + "xcpm."
         }
     }
     #endif

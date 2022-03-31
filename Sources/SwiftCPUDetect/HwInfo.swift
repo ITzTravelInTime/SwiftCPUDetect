@@ -34,14 +34,6 @@ public final class HWInfo{
             return ret
         }
         
-        ///Gets the stepping of the current CPU
-        ///NOTE: This information is only available on intel Macs.
-        public static func stepping() -> UInt?{
-            //return sysctlMachdepCpuUInt64("stepping")
-            let ret: UInt? = Sysctl.Machdep.CPU.getInteger("stepping")
-            return ret
-        }
-        
         ///Gets the brand name for the current CPU
         public static func brandString() -> String?{
             //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
