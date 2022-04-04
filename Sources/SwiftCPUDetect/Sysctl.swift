@@ -16,7 +16,7 @@ public protocol SysctlFetch{
 }
 
 public extension SysctlFetch{
-    ///Gets a `String` and the fetch score from the `sysctlbyname` command
+    ///Gets a `String` and the fetch score from the `sysctlbyname` function
      static func getStringWithFetchScore(_ valueName: String, bufferSize: size_t) -> (value: String?, score: Int32){
         var ret = [CChar].init(repeating: 0, count: bufferSize)
         
@@ -27,7 +27,7 @@ public extension SysctlFetch{
         return (value: res == 0 ? String(utf8String: ret) : nil, score: res)
     }
     
-    ///Gets an Integer value and the fetch score from the `sysctlbyname` command
+    ///Gets an Integer value and the fetch score from the `sysctlbyname` function
     static func getIntegerWithFetchScore<T: FixedWidthInteger>(_ valueName: String) -> (value: T?, score: Int32){
         var ret = T()
         
@@ -38,14 +38,31 @@ public extension SysctlFetch{
         return (value: res == 0 ? ret : nil, score: res)
     }
     
-    ///Gets a `String` from the `sysctlbyname` command
+    ///Gets a `Bool` value and the fetch score from the `sysctlbyname` function
+    static func getBoolWithFetchScore(_ valueName: String) -> (value: Bool?, score: Int32){
+        let res: (value: UInt?, score: Int32) = getIntegerWithFetchScore(valueName)
+        
+        if res.value == nil{
+            return (value: nil, score: res.score)
+        }
+        
+        return (value: res.value == 1, score: res.score)
+    }
+    
+    ///Gets a `String` from the `sysctlbyname` function
      static func getString(_ valueName: String, bufferSize: size_t) -> String?{
          return getStringWithFetchScore(valueName, bufferSize: bufferSize).value
     }
     
-    ///Gets an Integer value from the `sysctlbyname` command
+    ///Gets an Integer value from the `sysctlbyname` function
     static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
         let ret: T? = getIntegerWithFetchScore(valueName).value
+        return ret
+    }
+    
+    ///Gets a `Bool` value from the `sysctlbyname` function
+    static func getBool(_ valueName: String) -> Bool?{
+        let ret: Bool? = getBoolWithFetchScore(valueName).value
         return ret
     }
     
@@ -54,19 +71,42 @@ public extension SysctlFetch{
 public final class Sysctl: SysctlFetch{
     public static let namePrefix: String = ""
     
+    #if os(macOS)
     public final class Sysctl: SysctlFetch{
         public static let namePrefix: String = "sysctl"
+        
+        public static var proc_native: Bool? {
+            return Self.getBool("proc_native")
+        }
+        
+        public static var proc_translated: Bool? {
+            return Self.getBool("proc_translated")
+        }
     }
+    #endif
     
     public final class HW: SysctlFetch{
         public static let namePrefix: String = "hw."
         
         public final class Optional: SysctlFetch{
             public static let namePrefix: String = HW.namePrefix + "optional."
+        
+            public final class ARM: SysctlFetch{
+                public static let namePrefix: String = HW.Optional.namePrefix + "arm."
+                
+                public final class FEAT_: SysctlFetch{
+                    public static let namePrefix: String = HW.Optional.ARM.namePrefix + "FEAT_"
+                }
+            }
+        
         }
         
-        public final class Perflevel10: SysctlFetch{
-            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel10."
+        public final class Perflevel0: SysctlFetch{
+            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel0."
+        }
+        
+        public final class Perflevel1: SysctlFetch{
+            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel1."
         }
     }
     

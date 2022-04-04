@@ -11,6 +11,7 @@
 
 import Foundation
 
+#if os(macOS)
 ///This enum is used to determinate if the current process is running as emulated or native
 public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
     case unkown = -1
@@ -25,16 +26,12 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
         }
         
         if MEM.state == nil {
-            let fetch: (value: Int32?, score: Int32) = Sysctl.Sysctl.getIntegerWithFetchScore("proc_translated")
-            
-            if fetch.score == -1 {
-                if (errno == ENOENT){
-                    MEM.state = AppExecutionMode.native
-                }else{
-                    MEM.state = AppExecutionMode.unkown
-                }
-            }else if let raw = fetch.value{
-                MEM.state = AppExecutionMode(rawValue: raw) ?? .unkown
+            if let translated = Sysctl.Sysctl.proc_translated{
+                MEM.state = translated ? .emulated : .native
+            }else if let native = Sysctl.Sysctl.proc_native{
+                MEM.state = native ? .native : .emulated
+            }else if (errno == ENOENT){
+                MEM.state = .native
             }else{
                 MEM.state = .unkown
             }
@@ -45,3 +42,4 @@ public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
         return MEM.state!
     }
 }
+#endif

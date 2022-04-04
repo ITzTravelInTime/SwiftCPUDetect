@@ -6,10 +6,11 @@ Swift Library to detect the current CPU Architecture and if the current process 
 - Get if the current process is running using Rosetta (aka as emulated) using the `AppExecutionMode` enum
 - Get the Cpu architecture used by the current process, the computer or the ones supported by the current executable by using the `CpuArchitecture`  enum
 - Get CPU and system info using the `HWInfo` class
+- Get information from the sysctl api easily with the `Sysctl` namespace class (From version 2.0 onwards)
 
 # Usage
 
-Usage should be pretty simple, just take a look at the source code, here is also a very usefoul example usage:
+Usage should be pretty simple, just take a look at the source code. Here is also a very useful example usage:
 
 Also check out the DEMO playground included inside the project.
 
