@@ -37,14 +37,14 @@ public final class HWInfo{
         ///Gets the brand name for the current CPU
         public static func brandString() -> String?{
             //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
-            return Sysctl.Machdep.CPU.getString("brand_string", bufferSize: 256)
+            return Sysctl.Machdep.CPU.getString("brand_string")
         }
         
         ///Gets a string containing all the features supported by the current CPU
         ///NOTE: This information is only available on intel Macs.
         public static func features() -> String?{
             //return sysctlMachdepCpuString("features", bufferSize: 512)
-            return Sysctl.Machdep.CPU.getString("features", bufferSize: 512)
+            return Sysctl.Machdep.CPU.getString("features")
         }
         
         ///Gets an array of strings with the names of all the features supported by the current CPU

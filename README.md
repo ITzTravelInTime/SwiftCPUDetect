@@ -66,7 +66,7 @@ for arch in CpuArchitecture.currentExecutableArchitectures(){
 print("My app supports those architectures: " + str.dropLast())
 
 //Example for fetching values using the Sysctl namespace class (intel only)
-print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor", bufferSize: 256) ?? "Apple silicon or no vendor detected")")
+print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor") ?? "Apple silicon or no vendor detected")")
 
 ```
 

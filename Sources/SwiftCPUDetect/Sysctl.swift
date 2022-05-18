@@ -11,59 +11,48 @@
 
 import Foundation
 
-public protocol SysctlFetch{
+public protocol SysctlFetch: FetchProtocol{
     static var namePrefix: String {get}
 }
 
 public extension SysctlFetch{
-    ///Gets a `String` and the fetch score from the `sysctlbyname` function
-     static func getStringWithFetchScore(_ valueName: String, bufferSize: size_t) -> (value: String?, score: Int32){
-        var ret = [CChar].init(repeating: 0, count: bufferSize)
-        
-        var size = bufferSize
-        
-        let res = sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
-        
-        return (value: res == 0 ? String(utf8String: ret) : nil, score: res)
+    
+    ///Gets a `String` from the `sysctlbyname` function
+     static func getString(_ valueName: String) -> String?{
+         
+         var size: size_t = 0
+         
+         var res = sysctlbyname(namePrefix + valueName, nil, &size, nil, 0)
+         
+         if res != 0 {
+             return nil
+         }
+         
+         var ret = [CChar].init(repeating: 0, count: size)
+         
+         res = sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
+         
+         return res == 0 ? String(utf8String: ret) : nil
     }
     
-    ///Gets an Integer value and the fetch score from the `sysctlbyname` function
-    static func getIntegerWithFetchScore<T: FixedWidthInteger>(_ valueName: String) -> (value: T?, score: Int32){
+    ///Gets an Integer value from the `sysctlbyname` function
+    static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
         var ret = T()
         
         var size = MemoryLayout.size(ofValue: ret)
         
         let res = sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
         
-        return (value: res == 0 ? ret : nil, score: res)
-    }
-    
-    ///Gets a `Bool` value and the fetch score from the `sysctlbyname` function
-    static func getBoolWithFetchScore(_ valueName: String) -> (value: Bool?, score: Int32){
-        let res: (value: UInt?, score: Int32) = getIntegerWithFetchScore(valueName)
-        
-        if res.value == nil{
-            return (value: nil, score: res.score)
-        }
-        
-        return (value: res.value == 1, score: res.score)
-    }
-    
-    ///Gets a `String` from the `sysctlbyname` function
-     static func getString(_ valueName: String, bufferSize: size_t) -> String?{
-         return getStringWithFetchScore(valueName, bufferSize: bufferSize).value
-    }
-    
-    ///Gets an Integer value from the `sysctlbyname` function
-    static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
-        let ret: T? = getIntegerWithFetchScore(valueName).value
-        return ret
+        return res == 0 ? ret : nil
     }
     
     ///Gets a `Bool` value from the `sysctlbyname` function
     static func getBool(_ valueName: String) -> Bool?{
-        let ret: Bool? = getBoolWithFetchScore(valueName).value
-        return ret
+        guard let res: Int32 = getInteger(valueName) else{
+            return nil
+        }
+        
+        return res == 1
     }
     
 }
