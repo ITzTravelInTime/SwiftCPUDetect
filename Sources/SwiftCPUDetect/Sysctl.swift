@@ -63,12 +63,14 @@ public final class Sysctl: SysctlFetch{
     
     #if os(macOS)
     public final class Sysctl: SysctlFetch{
-        public static let namePrefix: String = "sysctl"
+        public static let namePrefix: String = "sysctl."
         
+        ///Gets is the current process is running as a native process for the current hw
         public static var proc_native: Bool? {
             return Self.getBool("proc_native")
         }
         
+        ///gets if the current process is running as translated via rosetta or similar
         public static var proc_translated: Bool? {
             return Self.getBool("proc_translated")
         }
@@ -76,46 +78,56 @@ public final class Sysctl: SysctlFetch{
     #endif
     
     public final class Kern: SysctlFetch{
-        public static let namePrefix: String = "kern"
+        public static let namePrefix: String = "kern."
         
+        ///The os kernel name
         public static var ostype: String?{
             return Self.getString("ostype")
         }
         
+        ///The os kernel version number
         public static var osrelease: String?{
             return Self.getString("osrelease")
         }
         
+        ///The os kernel build number
         public static var osrevision: String?{
             return Self.getString("osrevision")
         }
         
+        ///The os kernel version string
         public static var version: String?{
             return Self.getString("version")
         }
         
+        ///The current hostname or device name
         public static var hostname: String?{
             return Self.getString("hostname")
         }
         
+        ///The os legacy version number
         public static var osproductversioncompat: String?{
             return Self.getString("osproductversioncompat")
         }
         
+        ///The os version number
         public static var osproductversion: String?{
             return Self.getString("osproductversion")
         }
         
+        ///The os release type
         public static var osreleasetype: String?{
             return Self.getString("osreleasetype")
         }
         
         #if os(macOS)
+        ///the current version number for the macOS support for ios software
         public static var iossupportversion: String?{
             return Self.getString("iossupportversion")
         }
         #endif
         
+        ///the current system boot args
         public static var bootargs: String?{
             return Self.getString("bootargs")
         }
@@ -132,18 +144,22 @@ public final class Sysctl: SysctlFetch{
     public final class HW: SysctlFetch{
         public static let namePrefix: String = "hw."
         
+        ///gets the kenel cpu architecture (on macOS) or the current device model id (for the other platforms)
         public static var machine: String?{
             return Self.getString("machine")
         }
         
+        ///gets the current cpu type integer
         public static var cputype: cpu_type_t?{
             return Self.getInteger("cputype")
         }
         
+        ///gets the current cpu subtype integer
         public static var cpusubtype: cpu_subtype_t?{
             return Self.getInteger("cpusubtype")
         }
         
+        ///gets the current cpu family integer
         public static var cpufamily: UInt32?{
             return Self.getInteger("cpufamily")
         }

@@ -7,6 +7,7 @@ Swift Library to detect the current CPU Architecture and if the current process 
 - Get the Cpu architecture used by the current process, the computer or the ones supported by the current executable by using the `CpuArchitecture`  enum
 - Get CPU and system info using the `HWInfo` class
 - Get information from the sysctl api easily with the `Sysctl` namespace class (From version 2.0 onwards)
+- Swift-friendly re-implementation of uname, called `UnameReimplemented.uname` provviding also an API-equivalent for the uname command line program (From version 2.0 onwards)
 
 # Usage
 
@@ -21,15 +22,16 @@ import SwiftCPUDetect
 //Disabled debug prints from the library
 SwiftCPUDetect.GeneralPrinter.enabled = false
 
+var str = " "
+
 //those prints gets various info about the cpu
 #if os(macOS)
 
 print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
 
 print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
-print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" cores for each package")
+print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" threads for each package")
 
-var str = " "
 for info in HWInfo.CPU.featuresList() ?? []{ //intel only
     str += " \(info),"
 }
@@ -37,6 +39,9 @@ for info in HWInfo.CPU.featuresList() ?? []{ //intel only
 print("Features for CPU: \(str.dropLast())")
 
 print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
+
+//Prints the current execution mode
+print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
 
 #endif
 
@@ -46,9 +51,6 @@ print("This cpu is \(HWInfo.CPU.is64Bit() ? "64" : "32" ) bits")
 
 //Prints the ammount of RAM in bytes
 print("This computer has \(HWInfo.ramAmmount() ?? 0) Bytes of RAM")
-
-//Prints the current execution mode
-print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
 
 //Prints the architecture of the current process
 print("My app is running using the \(CpuArchitecture.current()?.rawValue ?? "[Can't detect architecture]") architecture")
@@ -65,8 +67,16 @@ for arch in CpuArchitecture.currentExecutableArchitectures(){
 
 print("My app supports those architectures: " + str.dropLast())
 
+//Testing the uname fetching
+print("Device's `uname -a`: \(UnameReimplemented.uname(withCommandLineArgs: [.a]) ?? "[Failed to get the uname string]")")
+
 //Example for fetching values using the Sysctl namespace class (intel only)
 print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor") ?? "Apple silicon or no vendor detected")")
+
+//Testing the boot args fetching
+print("Cureently used boot-args: \(Sysctl.Kern.bootargs ?? "[can't get the boot args]")")
+
+
 
 ```
 

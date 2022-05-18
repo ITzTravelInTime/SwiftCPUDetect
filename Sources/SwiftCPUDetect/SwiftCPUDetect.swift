@@ -154,6 +154,8 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     ///Gets the cpu architecture used by the current device
     public static func machineCurrent() -> CpuArchitecture?{
         guard let arch = current() else { return nil }
+        
+        #if os(macOS)
         let mode = AppExecutionMode.current()
         
         if mode == .emulated{
@@ -163,17 +165,18 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
                 return arm64
             }
             
+            if arch.isPPC64(){
+                Printer.print("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
+                return intel64
+            }
+            
             //May cause bad detections
             if arch.isPPC32(){
                 Printer.print("The actual cpu architecture of the current machine is: \(intel32.rawValue)")
                 return intel32
             }
-            
-            if arch.isPPC64(){
-                Printer.print("The actual cpu architecture of the current machine is: \(intel64.rawValue)")
-                return intel64
-            }
         }
+        #endif
         
         Printer.print("The actual cpu architecture of the current machine is: \(arch.rawValue)")
         return arch
@@ -184,7 +187,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     public static func currentExecutableArchitectures() -> [CpuArchitecture]{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
-            static var status: [CpuArchitecture]!
+            static var status: [CpuArchitecture]! = nil
         }
         
         if MEM.status == nil{
@@ -224,7 +227,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     
     ///Gets if the current instance is  a powerPC 64 bits cpu
     public func isPPC64() -> Bool{
-        return self == .ppc64 || self == .ppcG5
+        return self == .ppc64 || self == .ppcG5 || self == .ppc64le
     }
     
     ///Gets if the current istance is a powerPC 32 bits cpu
@@ -247,7 +250,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         return self == .intel32 || self == .intel64
     }
     
-    //Gets if the current instance is a 64 bit cpu
+    ///Gets if the current instance is a 64 bit cpu
     public func is64Bit() -> Bool{
         switch self {
         case .ppc64, .ppc64le, .intel64, .arm64:
@@ -255,5 +258,22 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         default:
             return false
         }
+    }
+    
+    ///Gets the generic processor family for the current cpu
+    public func genericProcessorType() -> Self{
+        if self.isPPC(){
+            return .ppc
+        }
+        
+        if self.isIntel(){
+            return .intel32
+        }
+        
+        if self.isArm(){
+            return .arm
+        }
+        
+        return self
     }
 }
