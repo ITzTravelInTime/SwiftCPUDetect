@@ -23,28 +23,28 @@ public final class HWInfo{
         
         ///Gets the number of threads of the current CPU
         public static func threadsCount() -> UInt?{
-            let ret: UInt? = Sysctl.Machdep.CPU.getInteger("thread_count")
+            let ret: UInt? = Sysctl.Machdep.CPU.threads_count
             return ret
         }
         
         ///Gets the number of cores of the current CPU
         public static func coresCount() -> UInt?{
             //return sysctlMachdepCpuUInt64("core_count")
-            let ret: UInt? = Sysctl.Machdep.CPU.getInteger("core_count")
+            let ret: UInt? = Sysctl.Machdep.CPU.cores_count
             return ret
         }
         
         ///Gets the brand name for the current CPU
         public static func brandString() -> String?{
             //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
-            return Sysctl.Machdep.CPU.getString("brand_string")
+            return Sysctl.Machdep.CPU.brand_string
         }
         
         ///Gets a string containing all the features supported by the current CPU
         ///NOTE: This information is only available on intel Macs.
         public static func features() -> String?{
             //return sysctlMachdepCpuString("features", bufferSize: 512)
-            return Sysctl.Machdep.CPU.getString("features")
+            return Sysctl.Machdep.CPU.features
         }
         
         ///Gets an array of strings with the names of all the features supported by the current CPU
@@ -62,72 +62,62 @@ public final class HWInfo{
         
         ///Gets the number of cores for each CPU package in the system
         public static func coresPerPackage() -> UInt?{
-            //return sysctlMachdepCpuUInt64("cores_per_package")
-            let ret: UInt? = Sysctl.Machdep.CPU.getInteger("cores_per_package")
-            return ret
+            return Sysctl.Machdep.CPU.cores_per_package
         }
         
         ///Gets the number of cpu threads for each CPU package in the system
         public static func threadsPerPackage() -> UInt?{
-            //return sysctlMachdepCpuUInt64("cores_per_package")
-            let ret: UInt? = Sysctl.Machdep.CPU.getInteger("logical_per_package")
-            return ret
+            return Sysctl.Machdep.CPU.logical_per_package
         }
         
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static func packagesCount() -> UInt?{
-            //return sysctlHwUInt64("packages")
-            let ret: UInt? = Sysctl.HW.getInteger("packages")
-            return ret
+            return Sysctl.HW.packages
         }
         
         ///Gets the nominal cpu frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static func cpuFrequency() -> UInt64?{
-            let ret: UInt64? = Sysctl.HW.getInteger("cpufrequency")
-            return ret
+            return Sysctl.HW.cpufrequency
         }
         
         ///Gets the nominal cpu bus frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static func busFrequency() -> UInt64?{
-            let ret: UInt64? = Sysctl.HW.getInteger("busfrequency")
-            return ret
+            return Sysctl.HW.busfrequency
         }
         
         #else
         
         ///Gets the number of threads of the current CPU
         public static func threadsCount() -> UInt64?{
-            //return sysctlHwUInt64("logicalcpu")
-            let ret: UInt? = Sysctl.HW.getInteger("logicalcpu")
-            return ret
+            return Sysctl.HW.logicalcpu
         }
         
         ///Gets the number of cores of the current CPU
         public static func coresCount() -> UInt?{
-            //return sysctlHwUInt64("physicalcpu")
-            let ret: UInt? = Sysctl.HW.getInteger("physicalcpu")
-            return ret
+            return Sysctl.HW.physicalcpu
         }
         
         #endif
         
         ///Gets if the current CPU is a 64 bit cpu
         public static func is64Bit() -> Bool{
-            //return sysctlHwUInt64("cpu64bit_capable") == 1
-            let ret: UInt? = Sysctl.HW.getInteger("cpu64bit_capable")
-            return (ret ?? 0) == 1
+            var is64 = false
+            
+            if #available(macOS 10.8, macCatalyst 11, iOS 11, *){
+                is64 = true
+            }
+            
+            return Sysctl.HW.cpu64bit_capable ?? is64
         }
         
     }
     
     ///Gets the current ammount of RAM inside the system
     public static func ramAmmount() -> UInt?{
-        //return sysctlHwUInt64("memsize")
-        let ret: UInt? = Sysctl.HW.getInteger("memsize")
-        return ret
+        return Sysctl.HW.memsize
     }
     
 }

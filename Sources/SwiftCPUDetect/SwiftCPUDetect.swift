@@ -62,21 +62,21 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
             
             var ret: CpuArchitecture?
             
-            guard let type: cpu_type_t = Sysctl.HW.getInteger("cputype") else {
+            guard let type = Sysctl.HW.cputype else {
                 Printer.print("ERROR: Can't get the cpu type value")
                 return nil
             }
             
             Printer.print("Detected CPU type number: \(type)")
             
-            guard let subtype: cpu_subtype_t = Sysctl.HW.getInteger("cpusubtype") else{
+            guard let subtype = Sysctl.HW.cpusubtype else{
                 Printer.print("ERROR: Can't get the cpu subtype value")
                 return nil
             }
             
             Printer.print("Detected CPU subtype number: \(subtype)")
             
-            guard let family: UInt32 = Sysctl.HW.getInteger("cpufamily") else{
+            guard let family = Sysctl.HW.cpufamily else{
                 Printer.print("ERROR: Can't get the cpu family value")
                 return nil
             }
@@ -190,7 +190,7 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
         if MEM.status == nil{
             var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64, 12: arm]
             
-            if #available(macOS 11.0, iOS 14.0, *, watchOS 7.0, tvOS 14.0) {
+            if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
                 supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
             }else{
                 supportedArchs[16777228] = arm64
@@ -245,5 +245,15 @@ public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
     ///Gets if the current instance is an intel cpu
     public func isIntel() -> Bool{
         return self == .intel32 || self == .intel64
+    }
+    
+    //Gets if the current instance is a 64 bit cpu
+    public func is64Bit() -> Bool{
+        switch self {
+        case .ppc64, .ppc64le, .intel64, .arm64:
+            return true
+        default:
+            return false
+        }
     }
 }
