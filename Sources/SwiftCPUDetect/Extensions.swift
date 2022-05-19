@@ -28,3 +28,15 @@ extension Array where Element: Equatable{
         self = self.removingDuplicates()
     }
 }
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13, *) extension CpuArchitecture: Identifiable{
+    public var id: RawValue{
+        return rawValue
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13, *) extension UnameReimplemented.UnameCommandLineArgs: Identifiable{
+    public var id: RawValue{
+        return rawValue
+    }
+}
