@@ -24,6 +24,9 @@ print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
 //Prints the current execution mode
 print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
 
+//Example for fetching values using the Sysctl namespace class (intel only)
+print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor") ?? "Apple silicon or no vendor detected")")
+
 #endif
 
 print("This cpu has \"\(HWInfo.CPU.coresCount() ?? 255)\" cores")
@@ -50,9 +53,6 @@ print("My app supports those architectures: " + str.dropLast())
 
 //Testing the uname fetching
 print("Device's `uname -a`: \(UnameReimplemented.uname(withCommandLineArgs: [.a]) ?? "[Failed to get the uname string]")")
-
-//Example for fetching values using the Sysctl namespace class (intel only)
-print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor") ?? "Apple silicon or no vendor detected")")
 
 //Testing the boot args fetching
 print("Cureently used boot-args: \(Sysctl.Kern.bootargs ?? "[can't get the boot args]")")

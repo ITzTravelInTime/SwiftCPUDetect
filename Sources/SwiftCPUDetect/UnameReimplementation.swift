@@ -111,6 +111,8 @@ public final class UnameReimplemented{
         case s
         ///Returns the os kernel name
         public static var operatingSystemName: Self { .s }
+        ///The default arg which returns the os kernel name
+        public static var defaultArg: Self { .s }
         
         //os kernel version number
         
@@ -125,39 +127,75 @@ public final class UnameReimplemented{
         case v
         ///Returns the os kernel version string
         public static var operatingSystemKernelVersionString: Self { .v }
+        
+        ///Returns the equivalent args for the all arg
+        public static var allEquivalent: [Self]{
+            return [.s, .n, .r, .v, .m]
+        }
     }
     
-    public static func uname(withCommandLineArgs args: [UnameCommandLineArgs] = [.s], forceNewFetch: Bool = false) -> String?{
+    ///Fetches information from the uname reimplementation and returns them as a `[UnameCommandLineArgs: String]` dictionary, the args names and roles matches the behavious of the `uname` command line tool on macOS
+    ///- Returns: a `[UnameCommandLineArgs: String]` dictionary conaining uname info like the `uname` command line tool organised by the relative arg. If the values can't be fetched nil is returned.
+    ///
+    ///See the `UnameCommandLineArgs` to learn more about available args and their role.
+    ///This function is designed to not produce replicates.
+    ///
+    ///NOTE: that the `p` argument is omitted when using the `a` arguments matching the behavior of the real command line tool.
+    public static func uname(withCommandLineArgs args: [UnameCommandLineArgs] = [.defaultArg], forceNewFetch: Bool = false) -> [UnameCommandLineArgs: String]?{
         guard let info = Self.uname(forceNewFetch) else{
+            return nil
+        }
+        
+        var ret = [UnameCommandLineArgs: String]()
+        
+        for i in args.workingCopy{
+            switch i {
+            case .a:
+                //return [.s: info.sysname, .n: info.nodename, .r: info.release, .v: info.version, .m: info.machine]
+                continue
+            case .m:
+                ret[.m] = info.machine
+            case .n:
+                ret[.n] = info.nodename
+            case .p:
+                ret[.p] = (CpuArchitecture.current()?.genericProcessorType().rawValue ?? info.machine)
+            case .s:
+                ret[.s] = info.sysname
+            case .r:
+                ret[.r] = info.release
+            case .v:
+                ret[.v] = info.version
+            }
+        }
+        
+        Printer.print("Obtained uname dictionary: \(ret)")
+        
+        return ret
+    }
+    
+    ///Fetches information from the uname reimplementation and returns them as a `String` the args names and roles matches the behavious of the `uname` command line tool on macOS
+    ///- Returns: a `String` dictionary conaining uname info like the `uname` command line tool. If the values can't be fetched nil is returned.
+    ///
+    ///See the `UnameCommandLineArgs` to learn more about available args and their role.
+    ///This function is designed to not produce replicates.
+    ///
+    ///NOTE: that the `p` argument is omitted when using the `a` arguments matching the behavior of the real command line tool.
+    public static func uname(withCommandLineArgs args: [UnameCommandLineArgs] = [.defaultArg], forceNewFetch: Bool = false) -> String?{
+        guard let res: [UnameCommandLineArgs: String] = uname(withCommandLineArgs: args, forceNewFetch: forceNewFetch) else{
             return nil
         }
         
         var ret = ""
         
-        for i in args{
-            switch i {
-            case .a:
-                return info.sysname + " " + info.nodename + " " + info.release + " " + info.version + " " + info.machine
-            case .m:
-                ret += info.machine + " "
-            case .n:
-                ret += info.nodename + " "
-            case .p:
-                ret += CpuArchitecture.current()?.genericProcessorType().rawValue ?? info.machine + " "
-            case .s:
-                ret += info.sysname + " "
-            case .r:
-                ret += info.release + " "
-            case .v:
-                ret += info.version + " "
-            }
+        for val in args.workingCopy{
+            guard let fetch = res[val] else { continue }
+            
+            ret += fetch + " "
         }
         
         if let last = ret.last, last == " "{
             ret.removeLast()
         }
-        
-        Printer.print("Obtained uname string \(ret)")
         
         return ret
     }
@@ -169,3 +207,8 @@ public final class UnameReimplemented{
     
 }
 
+fileprivate extension Array where Element == UnameReimplemented.UnameCommandLineArgs{
+    var workingCopy: Self{
+        return self.contains(.a) ? UnameReimplemented.UnameCommandLineArgs.allEquivalent : self.removingDuplicates()
+    }
+}

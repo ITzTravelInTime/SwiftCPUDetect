@@ -12,6 +12,7 @@
 import Foundation
 import Darwin.sys
 
+///Generic protocol to allow methods to fetch values out of `sysctl`
 public protocol SysctlFetch: FetchProtocol{
     static var namePrefix: String {get}
 }
@@ -58,10 +59,12 @@ public extension SysctlFetch{
     
 }
 
+///Object to read `sysctl` entries
 public final class Sysctl: SysctlFetch{
     public static let namePrefix: String = ""
     
     #if os(macOS)
+    ///Object to read `sysctl sysctl` entries
     public final class Sysctl: SysctlFetch{
         public static let namePrefix: String = "sysctl."
         
@@ -77,6 +80,7 @@ public final class Sysctl: SysctlFetch{
     }
     #endif
     
+    ///Object to read `sysctl machdep.kern` entries
     public final class Kern: SysctlFetch{
         public static let namePrefix: String = "kern."
         
@@ -133,14 +137,32 @@ public final class Sysctl: SysctlFetch{
         }
     }
     
+    ///Object to read `sysctl user` entries
     public final class User: SysctlFetch{
         public static let namePrefix: String = "user."
     }
     
+    ///Object to read `sysctl vm` entries
     public final class VM: SysctlFetch{
         public static let namePrefix: String = "vm."
     }
     
+    ///Object to read `sysctl vm` entries
+    public final class VFS: SysctlFetch{
+        public static let namePrefix: String = "vfs."
+    }
+    
+    ///Object to read `sysctl debug` entries
+    public final class Debug: SysctlFetch{
+        public static let namePrefix: String = "debug."
+    }
+    
+    ///Object to read `sysctl net` entries
+    public final class Net: SysctlFetch{
+        public static let namePrefix: String = "net."
+    }
+    
+    ///Object to read `sysctl hw` entries
     public final class HW: SysctlFetch{
         public static let namePrefix: String = "hw."
         
@@ -204,35 +226,39 @@ public final class Sysctl: SysctlFetch{
         }
         #endif
         
+        ///Object to read `sysctl hw.optional` entries
         public final class Optional: SysctlFetch{
             public static let namePrefix: String = HW.namePrefix + "optional."
         
+            ///Object to read `sysctl hw.optional.arm` entries
             public final class ARM: SysctlFetch{
                 public static let namePrefix: String = HW.Optional.namePrefix + "arm."
-                
-                public final class FEAT_: SysctlFetch{
-                    public static let namePrefix: String = HW.Optional.ARM.namePrefix + "FEAT_"
-                }
             }
         
         }
         
+        ///Object to read `sysctl hw.preflevel0` entries
         public final class Perflevel0: SysctlFetch{
-            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel0."
+            public static let namePrefix: String = HW.namePrefix + "perflevel0."
         }
         
+        ///Object to read `sysctl hw.preflevel1` entries
         public final class Perflevel1: SysctlFetch{
-            public static let namePrefix: String = Machdep.CPU.namePrefix + "perflevel1."
+            public static let namePrefix: String = HW.namePrefix + "perflevel1."
         }
     }
     
+    ///Object to read `sysctl machdep` entries
     public final class Machdep: SysctlFetch{
         public static let namePrefix: String = "machdep."
         
+        #if os(macOS)
+        
+        ///Object to read `sysctl machdep.cpu` entries
+        ///NOTE: Some entries might are intel only
         public final class CPU: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "cpu."
             
-            #if os(macOS)
             ///Gets the number of threads of the current CPU
             public static var threads_count: UInt?{
                 return Self.getInteger("thread_count")
@@ -265,66 +291,36 @@ public final class Sysctl: SysctlFetch{
                 return Self.getInteger("logical_per_package")
             }
             
-            #endif
-            
-            
+            ///Object to read `sysctl machdep.cpu.address_bits entries
+            ///NOTE: It might be available only on intel macs
             public final class Address_bits: SysctlFetch{
                 public static let namePrefix: String = Machdep.CPU.namePrefix + "address_bits."
             }
-            
-            public final class TSC_ccc: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "tsc_ccc."
-            }
-            
-            public final class Mwait: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "mwait."
-            }
-            
-            public final class Thermal: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "thermal."
-            }
-            
-            public final class Xsave: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "xsave."
-            }
-            
-            public final class Arch_perf: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "arch_perf."
-            }
-            
-            public final class Cache: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "cache."
-            }
-            
-            public final class Tlb: SysctlFetch{
-                public static let namePrefix: String = Machdep.CPU.namePrefix + "tlb."
-            }
         }
         
+        #endif
+        
+        ///Object to read `sysctl machdep.pmap` entries
         public final class Pmap: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "pmap."
         }
         
+        ///Object to read `sysctl machdep.vectors` entries
         public final class Vectors: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "vectors."
         }
         
+        ///Object to read `sysctl machdep.memmap` entries
         public final class Memmap: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "memmap."
         }
         
-        public final class TSC: SysctlFetch{
-            public static let namePrefix: String = Machdep.namePrefix + "tsc."
-            
-            public final class Nanotime: SysctlFetch{
-                public static let namePrefix: String = Machdep.TSC.namePrefix + "nanotime."
-            }
-        }
-        
+        ///Object to read `sysctl machdep.misc` entries
         public final class Misc: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "misc."
         }
         
+        ///Object to read `sysctl machdep.xcpm` entries
         public final class XCPM: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "xcpm."
         }
