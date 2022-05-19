@@ -12,7 +12,7 @@
 import Foundation
 
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
-public enum CpuArchitecture: String, Codable, Equatable, CaseIterable{
+public enum CpuArchitecture: String, Hashable, CaseIterable{
     case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there, so a bunch of PPC targets are included, if one is missing feel free to add it using a pull request.
     case ppcG3   = "ppc750"
     case ppcG4   = "ppc7450"
