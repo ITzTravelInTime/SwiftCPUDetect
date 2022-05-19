@@ -13,7 +13,7 @@ import Foundation
 
 #if os(macOS)
 ///This enum is used to determinate if the current process is running as emulated or native
-public enum AppExecutionMode: Int32, Codable, Equatable, CaseIterable{
+public enum AppExecutionMode: Int32, Hashable{
     case unkown = -1
     case native = 0
     case emulated = 1

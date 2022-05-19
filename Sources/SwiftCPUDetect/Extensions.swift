@@ -40,3 +40,11 @@ extension Array where Element: Equatable{
         return rawValue
     }
 }
+
+#if os(macOS)
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13, *) extension AppExecutionMode: Identifiable{
+    public var id: RawValue{
+        return rawValue
+    }
+}
+#endif
