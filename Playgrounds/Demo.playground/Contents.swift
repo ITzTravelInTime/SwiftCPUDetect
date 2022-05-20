@@ -13,6 +13,7 @@ print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")
 print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
 print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" threads for each package")
 
+#if arch(x86_64) || arch(i386)
 for info in HWInfo.CPU.featuresList() ?? []{ //intel only
     str += " \(info),"
 }
@@ -20,6 +21,7 @@ for info in HWInfo.CPU.featuresList() ?? []{ //intel only
 print("Features for CPU: \(str.dropLast())")
 
 print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
+#endif
 
 //Prints the current execution mode
 print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
@@ -34,7 +36,6 @@ print("This cpu has \"\(HWInfo.CPU.threadsCount() ?? 255)\" threads")
 
 print("This cpu has \"\(HWInfo.CPU.EfficiencyCores.coresCount() ?? 0)\" E-cores")
 print("This cpu has \"\(HWInfo.CPU.PerformanceCores.coresCount() ?? 0)\" P-cores")
-
 
 print("This cpu is \(HWInfo.CPU.is64Bit() ? "64" : "32" ) bits")
 
