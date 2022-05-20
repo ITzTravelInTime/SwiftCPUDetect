@@ -5,7 +5,7 @@ Swift Library to detect the current CPU Architecture and if the current process 
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FITzTravelInTime%2FSwiftCPUDetect%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ITzTravelInTime/SwiftCPUDetect)
 
-# Features
+## Features
 
 - Get if the current process is running using Rosetta (aka as emulated) using the `AppExecutionMode` enum
 - Get the Cpu architecture used by the current process, the computer or the ones supported by the current executable by using the `CpuArchitecture`  enum
@@ -13,7 +13,7 @@ Swift Library to detect the current CPU Architecture and if the current process 
 - Get information from the sysctl api easily with the `Sysctl` namespace class (From version 2.0 onwards)
 - Swift-friendly re-implementation of uname, called `UnameReimplemented.uname` provviding also an API-equivalent for the uname command line program (From version 2.0 onwards)
 
-# Usage
+## Usage
 
 Usage should be pretty simple, just take a look at the source code. Here is also a very useful example usage:
 
@@ -83,28 +83,28 @@ print("Cureently used boot-args: \(Sysctl.Kern.bootargs ?? "[can't get the boot 
 
 ```
 
-# What apps/programs is this Library intended for?
+## What apps/programs is this Library intended for?
 
 This library should be used by Swift apps/programs, that needs to know system information like the current cpu architecture, if the current app/program is running using Rosetta or just needs some basic system info.
 
 This code should work across multiple platforms based on the XNU kernel and that provvides the necessary function calls using the Foundation module, but it has been tested to work only on macOS/OS X and iOS.
 
-# About the project:
+## About the project:
 
 This code was created as part of my [TINU project](https://github.com/ITzTravelInTime/TINU) and it has been separated and made into it's own library to make the main project's source less complex and more focused on it's aim. 
 
 Also having this as it's own library allows for code to be updated separately and so various versions of the main TINU app will be able to be compiled all with the latest version of this library.
 
-# Credits:
+## Credits:
 
  - ITzTravelInTime (Pietro Caruso) - Project creator and main developer
  - Original source for the methods used to perform some of the detections: https://developer.apple.com/forums/thread/652667
 
-# Contacts
+## Contacts
 
  - ITzTravelInTime (Pietro Caruso, project creator): piecaruso97@gmail.com
 
-# Copyright
+## Copyright
 
 SwiftCPUDetect a Swift library to collect system and current process info.
 Copyright (C) 2022 Pietro Caruso
