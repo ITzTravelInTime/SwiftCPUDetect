@@ -202,7 +202,7 @@ public final class UnameReimplemented{
     
     ///The uname implementation returning an `UTSNameReimplemented` struct
     public static func uname(_ forceNewFetch: Bool = false) -> UTSNameReimplemented?{
-        UTSNameReimplemented.fromSysctl(forceNewFetch)
+        return UTSNameReimplemented.fromSysctl(forceNewFetch)
     }
     
 }

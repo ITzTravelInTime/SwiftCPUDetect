@@ -10,8 +10,6 @@
  */
 
 import Foundation
-//import Darwin.sys
-
 ///Generic protocol to allow methods to fetch values out of `sysctl`
 public protocol SysctlFetch: FetchProtocol{
     static var namePrefix: String {get}
@@ -57,6 +55,72 @@ public extension SysctlFetch{
         return res == 1
     }
     
+}
+
+public protocol SysctlCPUInfo: SysctlFetch{
+    
+}
+
+public extension SysctlCPUInfo{
+    ///The ammount of cores assinged
+    static var physicalcpu: UInt?{
+        return Self.getInteger("physicalcpu")
+    }
+    
+    ///The max ammount of cores
+    static var physicalcpu_max: UInt?{
+        return Self.getInteger("physicalcpu_max")
+    }
+    
+    ///The ammount of threads
+    static var logicalcpu: UInt?{
+        return Self.getInteger("logicalcpu")
+    }
+    
+    ///The max ammount of threads
+    static var logicalcpu_max: UInt?{
+        return Self.getInteger("logicalcpu_max")
+    }
+    
+    ///The ammount of L1 instruction
+    static var l1icachesize: UInt?{
+        return Self.getInteger("l1icachesize")
+    }
+    
+    ///The ammount of L1 data cache
+    static var l1dcachesize: UInt?{
+        return Self.getInteger("l1dcachesize")
+    }
+    
+    ///The ammount of L2 cache
+    static var l2cachesize: UInt?{
+        return Self.getInteger("l2cachesize")
+    }
+    
+    ///The ammount of L3 cache
+    static var l3cachesize: UInt?{
+        return Self.getInteger("l3cachesize")
+    }
+}
+
+public protocol SysctlPerflevel: SysctlCPUInfo {
+    static var index: UInt8 {get}
+}
+
+public extension SysctlPerflevel{
+    static var namePrefix: String{
+        return Sysctl.HW.namePrefix + "perflevel" + String(Self.index) + "."
+    }
+    
+    ///The ammount of cores per L2 cache assinged to this governor
+    static var cpusperl2: UInt?{
+        return Self.getInteger("cpusperl2")
+    }
+    
+    ///The ammount of cores per L2 cache assinged to this governor
+    static var cpusperl3: UInt?{
+        return Self.getInteger("cpusperl3")
+    }
 }
 
 ///Object to read `sysctl` entries
@@ -163,8 +227,23 @@ public final class Sysctl: SysctlFetch{
     }
     
     ///Object to read `sysctl hw` entries
-    public final class HW: SysctlFetch{
+    public final class HW: SysctlCPUInfo{
         public static let namePrefix: String = "hw."
+        
+        ///Gets the ammount of currently active cpu threads
+        public static var activecpu: UInt?{
+            return Self.getInteger("activecpu")
+        }
+        
+        ///Gets the ammount of cpu threads
+        public static var ncpu: UInt?{
+            return Self.getInteger("ncpu")
+        }
+        
+        ///Return the size of a memory page
+        public static var pagesize: UInt?{
+            return Self.getInteger("pagesize")
+        }
         
         ///gets the kenel cpu architecture (on macOS) or the current device model id (for the other platforms)
         public static var machine: String?{
@@ -186,16 +265,6 @@ public final class Sysctl: SysctlFetch{
             return Self.getInteger("cpufamily")
         }
         
-        ///Gets the number of threads of the current CPU
-        public static var logicalcpu: UInt64?{
-            return Self.getInteger("logicalcpu")
-        }
-        
-        ///Gets the number of cores of the current CPU
-        public static var physicalcpu: UInt?{
-            return Self.getInteger("physicalcpu")
-        }
-        
         ///Gets if the current CPU is a 64 bit cpu
         public static var cpu64bit_capable: Bool?{
             return Self.getBool("cpu64bit_capable")
@@ -206,7 +275,7 @@ public final class Sysctl: SysctlFetch{
             return Self.getInteger("memsize")
         }
         
-        #if os(macOS)
+        #if os(macOS) && (arch(x86_64) || arch(i386))
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static var packages: UInt?{
@@ -230,21 +299,23 @@ public final class Sysctl: SysctlFetch{
         public final class Optional: SysctlFetch{
             public static let namePrefix: String = HW.namePrefix + "optional."
         
+            #if arch(arm) || arch(arm64)
             ///Object to read `sysctl hw.optional.arm` entries
             public final class ARM: SysctlFetch{
                 public static let namePrefix: String = HW.Optional.namePrefix + "arm."
             }
+            #endif
         
         }
         
         ///Object to read `sysctl hw.preflevel0` entries
-        public final class Perflevel0: SysctlFetch{
-            public static let namePrefix: String = HW.namePrefix + "perflevel0."
+        public final class Perflevel0: SysctlPerflevel{
+            public static var index: UInt8 = 0
         }
         
         ///Object to read `sysctl hw.preflevel1` entries
-        public final class Perflevel1: SysctlFetch{
-            public static let namePrefix: String = HW.namePrefix + "perflevel1."
+        public final class Perflevel1: SysctlPerflevel{
+            public static var index: UInt8 = 1
         }
     }
     
@@ -255,7 +326,7 @@ public final class Sysctl: SysctlFetch{
         #if os(macOS)
         
         ///Object to read `sysctl machdep.cpu` entries
-        ///NOTE: Some entries might are intel only
+        ///NOTE: Some entries are available on intel only
         public final class CPU: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "cpu."
             
@@ -274,13 +345,6 @@ public final class Sysctl: SysctlFetch{
                 return Self.getString("brand_string")
             }
             
-            ///Gets a string containing all the features supported by the current CPU
-            ///NOTE: This information is only available on intel Macs.
-            public static var features: String?{
-                //return sysctlMachdepCpuString("features", bufferSize: 512)
-                return Self.getString("features")
-            }
-            
             ///Gets the number of cores for each CPU package in the system
             public static var cores_per_package: UInt?{
                 return Self.getInteger("cores_per_package")
@@ -291,15 +355,27 @@ public final class Sysctl: SysctlFetch{
                 return Self.getInteger("logical_per_package")
             }
             
+            #if (arch(x86_64) || arch(i386))
+            
+            ///Gets a string containing all the features supported by the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var features: String?{
+                //return sysctlMachdepCpuString("features", bufferSize: 512)
+                return Self.getString("features")
+            }
+            
             ///Object to read `sysctl machdep.cpu.address_bits entries
             ///NOTE: It might be available only on intel macs
             public final class Address_bits: SysctlFetch{
                 public static let namePrefix: String = Machdep.CPU.namePrefix + "address_bits."
             }
+            
+            #endif
         }
         
         #endif
         
+        #if (arch(x86_64) || arch(i386))
         ///Object to read `sysctl machdep.pmap` entries
         public final class Pmap: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "pmap."
@@ -324,6 +400,7 @@ public final class Sysctl: SysctlFetch{
         public final class XCPM: SysctlFetch{
             public static let namePrefix: String = Machdep.namePrefix + "xcpm."
         }
+        #endif
     }
     
 }

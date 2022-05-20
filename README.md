@@ -54,10 +54,15 @@ print("My cpu's vendor is \(Sysctl.Machdep.CPU.getString("vendor") ?? "Apple sil
 
 print("This cpu has \"\(HWInfo.CPU.coresCount() ?? 255)\" cores")
 print("This cpu has \"\(HWInfo.CPU.threadsCount() ?? 255)\" threads")
+
+print("This cpu has \"\(HWInfo.CPU.EfficiencyCores.coresCount() ?? 0)\" E-cores")
+print("This cpu has \"\(HWInfo.CPU.PerformanceCores.coresCount() ?? 0)\" P-cores")
+
+
 print("This cpu is \(HWInfo.CPU.is64Bit() ? "64" : "32" ) bits")
 
 //Prints the ammount of RAM in bytes
-print("This computer has \(HWInfo.ramAmmount() ?? 0) Bytes of RAM")
+print("This computer has \((HWInfo.ramAmmount() ?? 0) / (1024 * 1024 * 1024)) GB of RAM")
 
 //Prints the architecture of the current process
 print("My app is running using the \(CpuArchitecture.current()?.rawValue ?? "[Can't detect architecture]") architecture")

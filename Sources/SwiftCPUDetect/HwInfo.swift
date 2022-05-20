@@ -11,35 +11,65 @@
 
 import Foundation
 
+///Protocol used to make the implementation of the cpu info simpler
+public protocol CPUInfo{
+    associatedtype Reference: SysctlCPUInfo
+}
+
+public extension CPUInfo{
+    ///Gets the number of threads
+    static func threadsCount() -> UInt?{
+        return Reference.logicalcpu
+    }
+    
+    ///Gets the number of cores
+    static func coresCount() -> UInt?{
+        return Reference.physicalcpu
+    }
+    
+    ///The ammount L1 Data cache
+    static func l1DataCacheAmmount() -> UInt?{
+        return Reference.l1dcachesize
+    }
+    
+    ///The ammount L1 Instruction cache
+    static func l1InstructionCacheAmmount() -> UInt?{
+        return Reference.l1icachesize
+    }
+    
+    ///The ammount L2 cache
+    static func l2CacheAmmount() -> UInt?{
+        return Reference.l2cachesize
+    }
+    
+    ///The ammount L3 cache
+    static func l3CacheAmmount() -> UInt?{
+        return Reference.l3cachesize
+    }
+}
+
 ///Class used to get info about the current cpu inside the system
 public final class HWInfo{
     
     ///Class used to gather CPU Info
-    public final class CPU{
+    public final class CPU: CPUInfo{
+        public typealias Reference = Sysctl.HW
+        
+        ///Returns informations about the performance cores
+        public final class PerformanceCores: CPUInfo{
+            public typealias Reference = Sysctl.HW.Perflevel0
+        }
+        
+        ///Returns informations about the efficiency cores
+        public final class EfficiencyCores: CPUInfo{
+            public typealias Reference = Sysctl.HW.Perflevel1
+        }
         
         //Info functions
         
         #if os(macOS)
         
-        ///Gets the number of threads of the current CPU
-        public static func threadsCount() -> UInt?{
-            let ret: UInt? = Sysctl.Machdep.CPU.threads_count
-            return ret
-        }
-        
-        ///Gets the number of cores of the current CPU
-        public static func coresCount() -> UInt?{
-            //return sysctlMachdepCpuUInt64("core_count")
-            let ret: UInt? = Sysctl.Machdep.CPU.cores_count
-            return ret
-        }
-        
-        ///Gets the brand name for the current CPU
-        public static func brandString() -> String?{
-            //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
-            return Sysctl.Machdep.CPU.brand_string
-        }
-        
+        #if arch(x86_64) || arch(i386)
         ///Gets a string containing all the features supported by the current CPU
         ///NOTE: This information is only available on intel Macs.
         public static func features() -> String?{
@@ -60,16 +90,6 @@ public final class HWInfo{
             return ret
         }
         
-        ///Gets the number of cores for each CPU package in the system
-        public static func coresPerPackage() -> UInt?{
-            return Sysctl.Machdep.CPU.cores_per_package
-        }
-        
-        ///Gets the number of cpu threads for each CPU package in the system
-        public static func threadsPerPackage() -> UInt?{
-            return Sysctl.Machdep.CPU.logical_per_package
-        }
-        
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static func packagesCount() -> UInt?{
@@ -88,16 +108,22 @@ public final class HWInfo{
             return Sysctl.HW.busfrequency
         }
         
-        #else
+        #endif
         
-        ///Gets the number of threads of the current CPU
-        public static func threadsCount() -> UInt64?{
-            return Sysctl.HW.logicalcpu
+        ///Gets the number of cores for each CPU package in the system
+        public static func coresPerPackage() -> UInt?{
+            return Sysctl.Machdep.CPU.cores_per_package
         }
         
-        ///Gets the number of cores of the current CPU
-        public static func coresCount() -> UInt?{
-            return Sysctl.HW.physicalcpu
+        ///Gets the number of cpu threads for each CPU package in the system
+        public static func threadsPerPackage() -> UInt?{
+            return Sysctl.Machdep.CPU.logical_per_package
+        }
+        
+        ///Gets the brand name for the current CPU
+        public static func brandString() -> String?{
+            //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
+            return Sysctl.Machdep.CPU.brand_string
         }
         
         #endif
