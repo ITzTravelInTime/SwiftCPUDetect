@@ -10,7 +10,7 @@
  */
 
 import Foundation
-import Darwin.sys
+//import Darwin.sys
 
 ///Generic protocol to allow methods to fetch values out of `sysctl`
 public protocol SysctlFetch: FetchProtocol{
