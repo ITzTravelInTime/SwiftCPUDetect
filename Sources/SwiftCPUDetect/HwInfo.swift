@@ -42,10 +42,12 @@ public extension CPUInfo{
         return Reference.l2cachesize
     }
     
+    #if arch(x86_64) || arch(i386)
     ///The ammount L3 cache
     static func l3CacheAmmount() -> UInt?{
         return Reference.l3cachesize
     }
+    #endif
 }
 
 ///Class used to get info about the current cpu inside the system

@@ -132,8 +132,8 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
         
         #if os(macOS)
         guard let mode = AppExecutionMode.current() else{
-            Printer.errorPrint("Can't get execution mode for the app")
-            return nil
+            Printer.errorPrint("Can't get execution mode for the app, defaulting to current architecture")
+            return arch
         }
         
         if mode == .emulated{
