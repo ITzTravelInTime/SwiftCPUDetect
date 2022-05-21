@@ -12,7 +12,7 @@
 import Foundation
 
 #if os(Linux)
-import SwiftGlibc.sys.sysctl
+import Glibc
 
 public typealias cpu_type_t = UInt
 public typealias cpu_subtype_t = UInt
