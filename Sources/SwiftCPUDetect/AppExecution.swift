@@ -13,13 +13,13 @@ import Foundation
 
 #if os(macOS)
 ///This enum is used to determinate if the current process is running as emulated or native
-public enum AppExecutionMode: Int32, Hashable{
-    case unkown = -1
+public enum AppExecutionMode: Int32, Hashable, DetectProtocol{
+    @available(*, deprecated) case unkown = -1
     case native = 0
     case emulated = 1
     
     ///Gets if the current process is running natively or emulated
-    public static func current() -> AppExecutionMode{
+    public static func current() -> Self?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
             static var state: AppExecutionMode? = nil
@@ -33,13 +33,14 @@ public enum AppExecutionMode: Int32, Hashable{
             }else if (errno == ENOENT){
                 MEM.state = .native
             }else{
-                MEM.state = .unkown
+                Printer.errorPrint("Can't detect the app execution mode")
+                MEM.state = nil//.unkown
             }
             
             Printer.print("Detected Execution mode is: \(MEM.state == .emulated ? "Emulated" : (MEM.state == .native ? "Native" : "Unkown"))")
         }
         
-        return MEM.state!
+        return MEM.state
     }
 }
 #endif

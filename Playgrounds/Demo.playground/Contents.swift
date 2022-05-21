@@ -61,5 +61,5 @@ print("My app supports those architectures: " + str.dropLast())
 print("Device's `uname -a`: \(UnameReimplemented.uname(withCommandLineArgs: [.a]) ?? "[Failed to get the uname string]")")
 
 //Testing the boot args fetching
-print("Cureently used boot-args: \(Sysctl.Kern.bootargs ?? "[can't get the boot args]")")
+print("Curently used boot-args: \(Sysctl.Kern.bootargs ?? "[can't get the boot args]")")
 

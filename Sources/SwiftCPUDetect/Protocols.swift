@@ -16,3 +16,7 @@ public protocol FetchProtocol{
     static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?
     static func getBool(_ valueName: String) -> Bool?
 }
+
+public protocol DetectProtocol{
+    static func current() -> Self?
+}

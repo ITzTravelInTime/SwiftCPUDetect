@@ -20,10 +20,18 @@ open class GeneralPrinter {
         return ""
     }
     
-    open class func print( _ str: String){
+    open class var errorPrefix: String{
+        return ""
+    }
+    
+    open class func print( _ str: Any){
         if enabled{
             Swift.print("\(prefix) \(str)")
         }
+    }
+    
+    open class func errorPrint(_ str: Any){
+        Self.print("\(errorPrefix) \(str)")
     }
 }
 
@@ -31,5 +39,9 @@ open class GeneralPrinter {
 internal class Printer: GeneralPrinter{
     override class var prefix: String{
         return "[SwiftCPUDetect]"
+    }
+    
+    override class var errorPrefix: String{
+        return "ERROR: "
     }
 }

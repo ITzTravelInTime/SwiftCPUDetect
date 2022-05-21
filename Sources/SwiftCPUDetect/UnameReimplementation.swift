@@ -33,27 +33,27 @@ public final class UnameReimplemented{
             if ret == nil{
                 
                 guard let sysname = Sysctl.Kern.ostype else{
-                    Printer.print("Can't get the sysname data for uname")
+                    Printer.errorPrint("Can't get the sysname data for uname")
                     return nil
                 }
                 
                 guard let nodename = Sysctl.Kern.hostname else{
-                    Printer.print("Can't get the nodename data for uname")
+                    Printer.errorPrint("Can't get the nodename data for uname")
                     return nil
                 }
                 
                 guard let release = Sysctl.Kern.osrelease else{
-                    Printer.print("Can't get the release data for uname")
+                    Printer.errorPrint("Can't get the release data for uname")
                     return nil
                 }
                 
                 guard let version = Sysctl.Kern.version else{
-                    Printer.print("Can't get the version data for uname")
+                    Printer.errorPrint("Can't get the version data for uname")
                     return nil
                 }
                 
                 guard let machine = Sysctl.HW.machine else{
-                    Printer.print("Can't get the machine data for uname")
+                    Printer.errorPrint("Can't get the machine data for uname")
                     return nil
                 }
                 
@@ -83,6 +83,11 @@ public final class UnameReimplemented{
         case a
         ///Returns all uname categories
         public static var All: Self { .a }
+        
+        ///Returns the equivalent args for the all arg
+        public static var allEquivalent: [Self]{
+            return [.s, .n, .r, .v, .m]
+        }
         
         //machine hardware name
         
@@ -128,10 +133,7 @@ public final class UnameReimplemented{
         ///Returns the os kernel version string
         public static var operatingSystemKernelVersionString: Self { .v }
         
-        ///Returns the equivalent args for the all arg
-        public static var allEquivalent: [Self]{
-            return [.s, .n, .r, .v, .m]
-        }
+        
     }
     
     ///Fetches information from the uname reimplementation and returns them as a `[UnameCommandLineArgs: String]` dictionary, the args names and roles matches the behavious of the `uname` command line tool on macOS

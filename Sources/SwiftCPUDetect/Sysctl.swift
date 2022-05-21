@@ -97,10 +97,12 @@ public extension SysctlCPUInfo{
         return Self.getInteger("l2cachesize")
     }
     
+    #if arch(x86_64) || arch(i386)
     ///The ammount of L3 cache
     static var l3cachesize: UInt?{
         return Self.getInteger("l3cachesize")
     }
+    #endif
 }
 
 public protocol SysctlPerflevel: SysctlCPUInfo {
@@ -117,10 +119,12 @@ public extension SysctlPerflevel{
         return Self.getInteger("cpusperl2")
     }
     
+    #if arch(x86_64) || arch(i386)
     ///The ammount of cores per L2 cache assinged to this governor
     static var cpusperl3: UInt?{
         return Self.getInteger("cpusperl3")
     }
+    #endif
 }
 
 ///Object to read `sysctl` entries

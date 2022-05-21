@@ -12,7 +12,7 @@
 import Foundation
 
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
-public enum CpuArchitecture: String, Hashable, CaseIterable{
+public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     case ppc     = "ppc"   //belive it or not but there are swift compilers for ppc out there, so a bunch of PPC targets are included, if one is missing feel free to add it using a pull request.
     case ppcG3   = "ppc750"
     case ppcG4   = "ppc7450"
@@ -23,36 +23,11 @@ public enum CpuArchitecture: String, Hashable, CaseIterable{
     case intel64 = "x86_64" //most intel macs from 2008 on
     case arm     = "arm"
     case arm64   = "arm64"
-
-    ///Gets the raw value for the current architecture
-    public static func currentRaw() -> String? {
-        
-        var ret: String?
-        
-        /*#if os(macOS)
-        
-        //Only works well on  macOS, on other platforms just returns tha device model
-        var sysinfo = utsname()
-        let result = uname(&sysinfo)
-        guard result == EXIT_SUCCESS else { return nil }
-        let data = Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN))
-        guard let identifier = String(bytes: data, encoding: .ascii) else { return nil }
-        
-        ret = CpuArchitecture(rawValue: identifier.trimmingCharacters(in: .controlCharacters).lowercased() )
-        
-        #else*/
-        
-        ret = current()?.rawValue
-        
-        //#endif
-        
-        Printer.print("Detected raw arch is: \(ret ?? "[No arch detected]")")
-        
-        return ret
-    }
+    
+    public typealias AppArchitectures = [Self]
     
     ///Gets the cpu architecture used by the current process
-    public static func current() -> CpuArchitecture?{
+    public static func current() -> Self?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
             static var state: CpuArchitecture? = nil
@@ -63,21 +38,21 @@ public enum CpuArchitecture: String, Hashable, CaseIterable{
             var ret: CpuArchitecture?
             
             guard let type = Sysctl.HW.cputype else {
-                Printer.print("ERROR: Can't get the cpu type value")
+                Printer.errorPrint("Can't get the cpu type value")
                 return nil
             }
             
             Printer.print("Detected CPU type number: \(type)")
             
             guard let subtype = Sysctl.HW.cpusubtype else{
-                Printer.print("ERROR: Can't get the cpu subtype value")
+                Printer.errorPrint("Can't get the cpu subtype value")
                 return nil
             }
             
             Printer.print("Detected CPU subtype number: \(subtype)")
             
             guard let family = Sysctl.HW.cpufamily else{
-                Printer.print("ERROR: Can't get the cpu family value")
+                Printer.errorPrint("ERROR: Can't get the cpu family value")
                 return nil
             }
             
@@ -152,11 +127,14 @@ public enum CpuArchitecture: String, Hashable, CaseIterable{
     }
     
     ///Gets the cpu architecture used by the current device
-    public static func machineCurrent() -> CpuArchitecture?{
+    public static func machineCurrent() -> Self?{
         guard let arch = current() else { return nil }
         
         #if os(macOS)
-        let mode = AppExecutionMode.current()
+        guard let mode = AppExecutionMode.current() else{
+            Printer.errorPrint("Can't get execution mode for the app")
+            return nil
+        }
         
         if mode == .emulated{
             //Resetta 2 does not support 32 bit intel apps
@@ -184,40 +162,8 @@ public enum CpuArchitecture: String, Hashable, CaseIterable{
     }
     
     ///Returns the cpu architectures supported by the current program/app
-    public static func currentExecutableArchitectures() -> [CpuArchitecture]{
-        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
-        struct MEM{
-            static var status: [CpuArchitecture]! = nil
-        }
-        
-        if MEM.status == nil{
-            var supportedArchs = [NSBundleExecutableArchitectureX86_64: intel64, NSBundleExecutableArchitectureI386: intel32, NSBundleExecutableArchitecturePPC: ppc, NSBundleExecutableArchitecturePPC64: ppc64, 12: arm]
-            
-            if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
-                supportedArchs[NSBundleExecutableArchitectureARM64] = arm64
-            }else{
-                supportedArchs[16777228] = arm64
-            }
-            
-            let raw = Bundle.main.executableArchitectures ?? [NSNumber]()
-            
-            if raw.isEmpty{
-                Printer.print("Support for the executable's arch feature is usable only on bundle types! \n    An empry list will be returned")
-            }else{
-                Printer.print("Listing cpu architectures supported by the current bundle/app: ")
-            }
-            
-            MEM.status = []
-            
-            for arch in supportedArchs{
-                if raw.contains(NSNumber(value: arch.key)){
-                    MEM.status!.append(arch.value)
-                    Printer.print("    \(arch.value.rawValue)")
-                }
-            }
-        }
-        
-        return MEM.status
+    @available(*, deprecated, renamed: "AppArchitecture.current()") public static func currentExecutableArchitectures() -> AppArchitectures?{
+        return AppArchitectures.current()
     }
     
     ///Gets if the current istance is a powerPC cpu
@@ -275,5 +221,46 @@ public enum CpuArchitecture: String, Hashable, CaseIterable{
         }
         
         return self
+    }
+}
+
+extension CpuArchitecture.AppArchitectures: DetectProtocol{
+    
+    private struct MEM{
+        static var status: [CpuArchitecture]! = nil
+    }
+    
+    ///Returns the cpu architectures supported by the current program/app
+    public static func current() -> Self?{
+        //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
+        
+        if MEM.status == nil{
+            var supportedArchs = [NSBundleExecutableArchitectureX86_64: CpuArchitecture.intel64, NSBundleExecutableArchitectureI386: CpuArchitecture.intel32, NSBundleExecutableArchitecturePPC: CpuArchitecture.ppc, NSBundleExecutableArchitecturePPC64: CpuArchitecture.ppc64, 12: CpuArchitecture.arm]
+            
+            if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+                supportedArchs[NSBundleExecutableArchitectureARM64] = CpuArchitecture.arm64
+            }else{
+                supportedArchs[16777228] = CpuArchitecture.arm64
+            }
+            
+            let raw = Bundle.main.executableArchitectures ?? [NSNumber]()
+            
+            if raw.isEmpty{
+                Printer.errorPrint("Support for the executable's arch feature is usable only on bundle types! \n    An empry list will be returned")
+            }else{
+                Printer.print("Listing cpu architectures supported by the current bundle/app: ")
+            }
+            
+            MEM.status = []
+            
+            for arch in supportedArchs{
+                if raw.contains(NSNumber(value: arch.key)){
+                    MEM.status!.append(arch.value)
+                    Printer.print("    \(arch.value.rawValue)")
+                }
+            }
+        }
+        
+        return MEM.status
     }
 }
