@@ -10,6 +10,17 @@
  */
 
 import Foundation
+
+#if os(Linux)
+import SwiftGlibc.sys.sysctl
+
+public typealias cpu_type_t = UInt
+public typealias cpu_subtype_t = UInt
+public typealias cpu_threadtype_t = UInt
+#else
+import Darwin.sys.sysctl
+#endif
+
 ///Generic protocol to allow methods to fetch values out of `sysctl`
 public protocol SysctlFetch: FetchProtocol{
     static var namePrefix: String {get}

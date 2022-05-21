@@ -1,5 +1,5 @@
 # SwiftCPUDetect
-Swift Library to detect the current CPU Architecture and if the current process is running under Rosetta.
+Swift Library for all Apple Platforms to detect the current CPU Architecture and if the current process is running under Rosetta.
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FITzTravelInTime%2FSwiftCPUDetect%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ITzTravelInTime/SwiftCPUDetect)
 
