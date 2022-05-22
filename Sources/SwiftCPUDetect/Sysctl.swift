@@ -12,7 +12,7 @@
 import Foundation
 
 #if os(Linux)
-import Glibc.sys.sysctl
+import Glibc
 #else
 import Darwin.sys.sysctl
 #endif
@@ -29,17 +29,19 @@ public extension SysctlFetch{
         
         var size: size_t = 0
         
-        var res = sysctlbyname(namePrefix + valueName, nil, &size, nil, 0)
+        let name = namePrefix + valueName
+        
+        var res = sysctlbyname(name, nil, &size, nil, 0)
         
         if res != 0 {
             return nil
         }
         
-        var ret = [CChar].init(repeating: 0, count: size)
+        var ret = [CChar].init(repeating: 0, count: size + 1)
         
-        res = sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
+        res = sysctlbyname(name, &ret, &size, nil, 0)
         
-        return res == 0 ? String(utf8String: ret) : nil
+        return res == 0 ? String(cString: ret) : nil
     }
     
     ///Gets an Integer value from the `sysctlbyname` function
