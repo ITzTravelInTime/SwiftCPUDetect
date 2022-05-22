@@ -12,12 +12,12 @@
 import Foundation
 
 #if os(Linux)
-import Glibc
+import Glibc //? not sure about where i can find `sysctlbyname` in linux without using C headers
 #else
 import Darwin.sys.sysctl
 #endif
 
-///Generic protocol to allow methods to fetch values out of `sysctl`
+///Generic protocol to allow easy fetching of values out of `sysctlbyname`
 public protocol SysctlFetch: FetchProtocol{
     static var namePrefix: String {get}
 }
