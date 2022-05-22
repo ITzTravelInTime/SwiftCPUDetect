@@ -74,7 +74,7 @@ print("My computer is running using the \(CpuArchitecture.machineCurrent()?.rawV
 //Prints the architectures supported by the current executable
 str = " "
 
-for arch in CpuArchitecture.currentExecutableArchitectures(){
+for arch in CpuArchitecture.AppArchitectures.current() ?? []{
     str += " " + arch.rawValue + ","
 }
 

@@ -11,6 +11,8 @@
 
 import Foundation
 
+#if !os(Linux)
+
 ///Protocol used to make the implementation of the cpu info simpler
 public protocol CPUInfo{
     associatedtype Reference: SysctlCPUInfo
@@ -149,3 +151,5 @@ public final class HWInfo{
     }
     
 }
+
+#endif

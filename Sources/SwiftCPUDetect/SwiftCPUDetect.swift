@@ -11,7 +11,7 @@
 
 import Foundation
 
-
+#if !os(Linux)
 
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
 public enum CpuArchitecture: String, Hashable, DetectProtocol  {
@@ -266,3 +266,5 @@ extension CpuArchitecture.AppArchitectures: DetectProtocol{
         return MEM.status
     }
 }
+
+#endif

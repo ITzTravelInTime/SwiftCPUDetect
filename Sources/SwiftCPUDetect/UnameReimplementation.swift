@@ -11,6 +11,8 @@
 
 import Foundation
 
+#if !os(Linux)
+
 ///Namespace reimplementing the uname feature in a Swift-friendly way
 public final class UnameReimplemented{
         
@@ -214,3 +216,5 @@ fileprivate extension Array where Element == UnameReimplemented.UnameCommandLine
         return self.contains(.a) ? UnameReimplemented.UnameCommandLineArgs.allEquivalent : self.removingDuplicates()
     }
 }
+
+#endif
