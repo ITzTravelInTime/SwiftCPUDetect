@@ -14,7 +14,7 @@ import Foundation
 #if os(Linux)
 import Glibc //? not sure about where i can find `sysctlbyname` in linux without using C headers
 #else
-import Darwin.sys.sysctl
+//import Darwin.sys.sysctl
 #endif
 
 ///Generic protocol to allow easy fetching of values out of `sysctlbyname`
@@ -24,6 +24,10 @@ public protocol SysctlFetch: FetchProtocol{
 
 public extension SysctlFetch{
     
+    static var dataSurce: (_: UnsafePointer<CChar>?, _: UnsafeMutableRawPointer?, _: UnsafeMutablePointer<Int>?, _: UnsafeMutableRawPointer?, _: Int) -> Int32{
+        return Darwin.sysctlbyname
+    }
+    
     ///Gets a `String` from the `sysctlbyname` function
     static func getString(_ valueName: String) -> String?{
         
@@ -31,7 +35,7 @@ public extension SysctlFetch{
         
         let name = namePrefix + valueName
         
-        var res = sysctlbyname(name, nil, &size, nil, 0)
+        var res = dataSurce(name, nil, &size, nil, 0)
         
         if res != 0 {
             return nil
@@ -39,7 +43,7 @@ public extension SysctlFetch{
         
         var ret = [CChar].init(repeating: 0, count: size + 1)
         
-        res = sysctlbyname(name, &ret, &size, nil, 0)
+        res = dataSurce(name, &ret, &size, nil, 0)
         
         return res == 0 ? String(cString: ret) : nil
     }
@@ -50,7 +54,7 @@ public extension SysctlFetch{
         
         var size = MemoryLayout.size(ofValue: ret)
         
-        let res = sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
+        let res = dataSurce(namePrefix + valueName, &ret, &size, nil, 0)
         
         return res == 0 ? ret : nil
     }
