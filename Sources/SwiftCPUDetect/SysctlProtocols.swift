@@ -11,6 +11,23 @@
 
 import Foundation
 
+///Generic protocol to allow easy fetching of values out of `sysctlbyname`
+public protocol SysctlFetch: FetchProtocol{
+    static var namePrefix: String {get}
+}
+
+public extension SysctlFetch{
+    ///Gets a `Bool` value from the `sysctlbyname` function
+    static func getBool(_ valueName: String) -> Bool?{
+        guard let res: Int32 = getInteger(valueName) else{
+            return nil
+        }
+        
+        return res == 1
+    }
+    
+}
+
 #if !os(Linux)
 public protocol SysctlCPUInfo: SysctlFetch{}
 
@@ -81,31 +98,5 @@ public extension SysctlPerflevel{
 }
 
 #endif
-
-public protocol SysctlKernel: SysctlFetch{}
-
-public extension SysctlKernel{
-    ///The os kernel version string
-    static var version: String?{
-        return Self.getString("version")
-    }
-    
-    ///The current hostname or device name
-    static var hostname: String?{
-        return Self.getString("hostname")
-    }
-    
-    ///The os kernel name
-    static var ostype: String?{
-        return Self.getString("ostype")
-    }
-    
-    ///The os kernel version number
-    static var osrelease: String?{
-        return Self.getString("osrelease")
-    }
-    
-    
-}
 
 

@@ -11,67 +11,54 @@
 
 import Foundation
 
-#if os(Linux)
-import Glibc //? not sure about where i can find `sysctlbyname` in linux without using C headers
-#else
-//import Darwin.sys.sysctl
-#endif
-
-///Generic protocol to allow easy fetching of values out of `sysctlbyname`
-public protocol SysctlFetch: FetchProtocol{
-    static var namePrefix: String {get}
-}
-
-public extension SysctlFetch{
-    
-    static var dataSurce: (_: UnsafePointer<CChar>?, _: UnsafeMutableRawPointer?, _: UnsafeMutablePointer<Int>?, _: UnsafeMutableRawPointer?, _: Int) -> Int32{
-        return Darwin.sysctlbyname
-    }
-    
-    ///Gets a `String` from the `sysctlbyname` function
-    static func getString(_ valueName: String) -> String?{
-        
-        var size: size_t = 0
-        
-        let name = namePrefix + valueName
-        
-        var res = dataSurce(name, nil, &size, nil, 0)
-        
-        if res != 0 {
-            return nil
-        }
-        
-        var ret = [CChar].init(repeating: 0, count: size + 1)
-        
-        res = dataSurce(name, &ret, &size, nil, 0)
-        
-        return res == 0 ? String(cString: ret) : nil
-    }
-    
-    ///Gets an Integer value from the `sysctlbyname` function
-    static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
-        var ret = T()
-        
-        var size = MemoryLayout.size(ofValue: ret)
-        
-        let res = dataSurce(namePrefix + valueName, &ret, &size, nil, 0)
-        
-        return res == 0 ? ret : nil
-    }
-    
-    ///Gets a `Bool` value from the `sysctlbyname` function
-    static func getBool(_ valueName: String) -> Bool?{
-        guard let res: Int32 = getInteger(valueName) else{
-            return nil
-        }
-        
-        return res == 1
-    }
-    
-}
-
 ///Object to read `sysctl` entries
 public final class Sysctl: SysctlFetch{
     public static let namePrefix: String = ""
+    
+    #if os(macOS)
+    ///Object to read `sysctl sysctl` entries
+    final class Sysctl: SysctlFetch{
+        public static let namePrefix: String = "sysctl."
+        
+        ///Gets is the current process is running as a native process for the current hw
+        public static var proc_native: Bool? {
+            return Self.getBool("proc_native")
+        }
+        
+        ///gets if the current process is running as translated via rosetta or similar
+        public static var proc_translated: Bool? {
+            return Self.getBool("proc_translated")
+        }
+    }
+    #endif
+    
+    #if !os(Linux)
+    
+    ///Object to read `sysctl vfs` entries
+    final class VFS: SysctlFetch{
+        public static let namePrefix: String = "vfs."
+    }
+    
+    #endif
+    
+    ///Object to read `sysctl user` entries
+    final class User: SysctlFetch{
+        public static let namePrefix: String = "user."
+    }
+    
+    ///Object to read `sysctl vm` entries
+    final class VM: SysctlFetch{
+        public static let namePrefix: String = "vm."
+    }
+    
+    ///Object to read `sysctl debug` entries
+    final class Debug: SysctlFetch{
+        public static let namePrefix: String = "debug."
+    }
+    
+    ///Object to read `sysctl net` entries
+    final class Net: SysctlFetch{
+        public static let namePrefix: String = "net."
+    }
+    
 }
-

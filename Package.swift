@@ -28,9 +28,9 @@ let package = Package(
         .target(
             name: "SwiftCPUDetect",
             dependencies: [])
-        /*,
+        ,
         .testTarget(
             name: "SwiftCPUDetectTests",
-            dependencies: ["SwiftCPUDetect"]) */
+            dependencies: ["SwiftCPUDetect"])
     ]
 )

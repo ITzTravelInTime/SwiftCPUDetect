@@ -12,18 +12,12 @@
 import Foundation
 
 public extension Sysctl{
-    #if os(Linux)
-    
-    final class Kernel: SysctlKernel{
-        public static let namePrefix: String = "kernel."
-    }
-    
-    typealias Kern = Kernel
-    
-    #else
     
     ///Object to read `sysctl kern` entries
-    final class Kern: SysctlKernel{
+    final class Kern: SysctlFetch{
+        #if os(Linux)
+        public static let namePrefix: String = "kernel."
+        #else
         public static let namePrefix: String = "kern."
         
         ///The os kernel build number
@@ -58,9 +52,29 @@ public extension Sysctl{
         public static var bootargs: String?{
             return Self.getString("bootargs")
         }
+        
+        #endif
+        
+        ///The os kernel version string
+        static var version: String?{
+            return Self.getString("version")
+        }
+        
+        ///The current hostname or device name
+        static var hostname: String?{
+            return Self.getString("hostname")
+        }
+        
+        ///The os kernel name
+        static var ostype: String?{
+            return Self.getString("ostype")
+        }
+        
+        ///The os kernel version number
+        static var osrelease: String?{
+            return Self.getString("osrelease")
+        }
     }
     
     typealias Kernel = Kern
-    
-    #endif
 }
