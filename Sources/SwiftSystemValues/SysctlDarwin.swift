@@ -8,6 +8,8 @@
 import Foundation
 
 #if !os(Linux)
+public typealias SysctlBaseProtocol = FetchProtocolBoolFromInt
+
 public extension SysctlFetch{
     
     ///Gets a `String` from the `sysctlbyname` function

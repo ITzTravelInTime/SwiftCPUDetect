@@ -10,8 +10,9 @@
  */
 
 import Foundation
+import SwiftSystemValues
 
-#if !os(Linux)
+//#if !os(Linux)
 
 ///Namespace reimplementing the uname feature in a Swift-friendly way
 public final class UnameReimplemented{
@@ -54,10 +55,15 @@ public final class UnameReimplemented{
                     return nil
                 }
                 
+                #if os(Linux)
+                let machine = ""
+                #warning("Implement me!")
+                #else
                 guard let machine = Sysctl.HW.machine else{
                     Printer.errorPrint("Can't get the machine data for uname")
                     return nil
                 }
+                #endif
                 
                 /*
                  guard let sysname = Sysctl.Kern.ostype, let nodename = Sysctl.Kern.hostname, let release = Sysctl.Kern.osrelease, let version = Sysctl.Kern.version, let machine = Sysctl.HW.machine else{
@@ -162,7 +168,11 @@ public final class UnameReimplemented{
             case .n:
                 ret[.n] = info.nodename
             case .p:
+                #if !os(Linux)
                 ret[.p] = (CpuArchitecture.current()?.genericProcessorType().rawValue ?? info.machine)
+                #else
+                #warning("Implement me!")
+                #endif
             case .s:
                 ret[.s] = info.sysname
             case .r:
@@ -217,4 +227,4 @@ fileprivate extension Array where Element == UnameReimplemented.UnameCommandLine
     }
 }
 
-#endif
+//#endif

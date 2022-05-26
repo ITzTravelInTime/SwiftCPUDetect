@@ -22,6 +22,7 @@ Also check out the DEMO playground included inside the project.
 ```swift
 
 import SwiftCPUDetect
+import SwiftSystemValues
 
 //Disabled debug prints from the library
 SwiftCPUDetect.GeneralPrinter.enabled = false

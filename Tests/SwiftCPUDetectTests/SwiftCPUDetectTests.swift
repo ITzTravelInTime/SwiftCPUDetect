@@ -1,9 +1,11 @@
 
 import Foundation
 
+
 #if !os(watchOS) || swift(>=5.4)
 import XCTest
 @testable import SwiftCPUDetect
+@testable import SwiftSystemValues
 
 final class SwiftLinuxSysctlTests: XCTestCase {
     func testExample() throws {
@@ -11,7 +13,7 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         
-        Printer.print("[Test] Testing backend")
+        print("[Test] Testing backend")
         
         #if !os(Linux)
         let expectedValues: [String] = ["Darwin"]
@@ -19,11 +21,13 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         let expectedValues: [String] = ["Linux"]
         #endif
         
-        Printer.print("[Test] Excpected values: \(expectedValues)")
+        print("[Test] Excpected values: \(expectedValues)")
         
         let fetched: [String?] = [Sysctl.Kernel.ostype]
         
-        Printer.print("[Test] Fetched test values: \(fetched)")
+        print("[Test] Fetched test values: \(fetched)")
+        
+        print("[Test] Starting tests")
         
         assert(fetched.count == expectedValues.count, "BAD TEST!!! Array lenght mismatch")
         
@@ -34,6 +38,22 @@ final class SwiftLinuxSysctlTests: XCTestCase {
             XCTAssertEqual(fetched[i], expectedValues[i])
             
         }
+        
+        print("[Test] test done")
+        
+        let uname: String? = UnameReimplemented.uname(withCommandLineArgs: [.a])
+        
+        print("[Test] Uname -a: \(uname ?? "Can't fetch the uname value")")
+        
+        #if os(Linux)
+        
+        print("[Test] Fetched Linux cpu preset: \(SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.present ?? "")")
+        
+        print("[Test] Fetched Linux cpu values: \(SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.listFileEntriesWithValues("")!)")
+        
+        print("[Test] Fetched Linux cpu info: \(SwiftSystemValues.FileSystem.Proc.cpuinfoItems() ?? [[:]])")
+        
+        #endif
     }
 }
 #endif

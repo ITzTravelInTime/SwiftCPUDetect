@@ -17,7 +17,7 @@ public final class Sysctl: SysctlFetch{
     
     #if os(macOS)
     ///Object to read `sysctl sysctl` entries
-    final class Sysctl: SysctlFetch{
+    public final class Sysctl: SysctlFetch{
         public static let namePrefix: String = "sysctl."
         
         ///Gets is the current process is running as a native process for the current hw

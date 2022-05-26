@@ -11,23 +11,6 @@
 
 import Foundation
 
-///Generic protocol to allow easy fetching of values out of `sysctlbyname`
-public protocol SysctlFetch: FetchProtocol{
-    static var namePrefix: String {get}
-}
-
-public extension SysctlFetch{
-    ///Gets a `Bool` value from the `sysctlbyname` function
-    static func getBool(_ valueName: String) -> Bool?{
-        guard let res: Int32 = getInteger(valueName) else{
-            return nil
-        }
-        
-        return res == 1
-    }
-    
-}
-
 #if !os(Linux)
 public protocol SysctlCPUInfo: SysctlFetch{}
 
@@ -73,10 +56,6 @@ public extension SysctlCPUInfo{
         return Self.getInteger("l3cachesize")
     }
     #endif
-}
-
-public protocol SysctlPerflevel: SysctlCPUInfo {
-    static var index: UInt8 {get}
 }
 
 public extension SysctlPerflevel{

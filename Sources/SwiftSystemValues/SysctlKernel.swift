@@ -56,22 +56,22 @@ public extension Sysctl{
         #endif
         
         ///The os kernel version string
-        static var version: String?{
+        public static var version: String?{
             return Self.getString("version")
         }
         
         ///The current hostname or device name
-        static var hostname: String?{
+        public static var hostname: String?{
             return Self.getString("hostname")
         }
         
         ///The os kernel name
-        static var ostype: String?{
+        public static var ostype: String?{
             return Self.getString("ostype")
         }
         
         ///The os kernel version number
-        static var osrelease: String?{
+        public static var osrelease: String?{
             return Self.getString("osrelease")
         }
     }
