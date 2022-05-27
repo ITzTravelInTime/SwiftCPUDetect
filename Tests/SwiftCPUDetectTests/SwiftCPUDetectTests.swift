@@ -1,8 +1,7 @@
 
 import Foundation
 
-
-#if !os(watchOS) || swift(>=5.4)
+#if !os(watchOS) || swift(>=5.4) || canImport(XCTest)
 import XCTest
 @testable import SwiftCPUDetect
 @testable import SwiftSystemValues
