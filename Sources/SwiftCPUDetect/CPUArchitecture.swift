@@ -12,7 +12,7 @@
 import Foundation
 import SwiftSystemValues
 
-#if !os(Linux)
+//#if !os(Linux)
 
 ///This enum is used to make more conveniente the detection of the actual cpu architecture
 public enum CpuArchitecture: String, Hashable, DetectProtocol  {
@@ -36,9 +36,12 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
             static var state: CpuArchitecture? = nil
         }
         
+        
         if MEM.state == nil{
             
             var ret: CpuArchitecture?
+            
+            #if !os(Linux)
             
             guard let type = Sysctl.HW.cputype else {
                 Printer.errorPrint("Can't get the cpu type value")
@@ -120,6 +123,10 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
                 }
             }
             
+            #else
+            ret = binaryCurrent()
+            #endif
+            
             
             Printer.print("Detected cpu architecture of the current process is: \(ret?.rawValue ?? "[Arch not detected]")")
             
@@ -127,6 +134,49 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
         }
         
         return MEM.state
+    }
+    
+    ///Gets the cpu architechure the current binary is using to run
+    public static func binaryCurrent() -> Self{
+        
+        #if os(Linux)
+            #if arch(x86_64h)
+            return .intel64
+            #endif
+
+            #if arch(i686)
+            return .intel32
+            #endif
+        
+            #if arch(powerpc)
+            return .ppc
+            #endif
+        #endif
+        
+        #if arch(x86_64)
+        return .intel64
+        #endif
+        
+        #if arch(i386)
+        return .intel32
+        #endif
+        
+        #if arch(arm64)
+        return .arm64
+        #endif
+        
+        #if arch(arm) || arch(arm64_32)
+        return .arm
+        #endif
+        
+        #if arch(powerpc64) && _endian(big)
+        return .ppc64
+        #endif
+        
+        #if arch(powerpc64le) && _endian(little)
+        return .ppc64le
+        #endif
+        
     }
     
     ///Gets the cpu architecture used by the current device
@@ -238,6 +288,7 @@ extension CpuArchitecture.AppArchitectures: DetectProtocol{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         
         if MEM.status == nil{
+            #if !os(Linux)
             var supportedArchs = [NSBundleExecutableArchitectureX86_64: CpuArchitecture.intel64, NSBundleExecutableArchitectureI386: CpuArchitecture.intel32, NSBundleExecutableArchitecturePPC: CpuArchitecture.ppc, NSBundleExecutableArchitecturePPC64: CpuArchitecture.ppc64, 12: CpuArchitecture.arm]
             
             if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
@@ -262,10 +313,14 @@ extension CpuArchitecture.AppArchitectures: DetectProtocol{
                     Printer.print("    \(arch.value.rawValue)")
                 }
             }
+            
+            #else
+            MEM.status = [.binaryCurrent()]
+            #endif
         }
         
         return MEM.status
     }
 }
 
-#endif
+//#endif

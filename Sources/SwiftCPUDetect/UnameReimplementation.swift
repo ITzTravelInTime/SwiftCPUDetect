@@ -56,8 +56,7 @@ public final class UnameReimplemented{
                 }
                 
                 #if os(Linux)
-                let machine = ""
-                #warning("Implement me!")
+                let machine = CpuArchitecture.binaryCurrent().rawValue
                 #else
                 guard let machine = Sysctl.HW.machine else{
                     Printer.errorPrint("Can't get the machine data for uname")
@@ -171,7 +170,7 @@ public final class UnameReimplemented{
                 #if !os(Linux)
                 ret[.p] = (CpuArchitecture.current()?.genericProcessorType().rawValue ?? info.machine)
                 #else
-                #warning("Implement me!")
+                ret[.p] = CpuArchitecture.binaryCurrent().rawValue
                 #endif
             case .s:
                 ret[.s] = info.sysname

@@ -31,7 +31,7 @@ public final class FileSystem: FileSystemFetch{
         
         public static func cpuinfoItems() -> [[String: Any]]?{
             guard let info = cpuinfo?.split(separator: "\n", omittingEmptySubsequences: false) else{
-                Printer.errorPrint("Can't get get the cpuinfo data!!")
+                Printer.errorPrint("Can't get the cpuinfo data!!")
                 return nil
             }
             
@@ -103,6 +103,8 @@ public final class FileSystem: FileSystemFetch{
                 public final class CPU: FileSystemFetch{
                     public static let subfolder: String = System.subfolder + "cpu/"
                     
+                    //TODO: Implement fetching of cpus
+                    
                     public static var online: String?{
                         return getString("online")
                     }
@@ -122,6 +124,16 @@ public final class FileSystem: FileSystemFetch{
                     public static var modalias: String?{
                         return getString("modalias")
                     }
+                    
+                    public final class Caps: FileSystemFetch{
+                        public static let subfolder: String = CPU.subfolder + "caps/"
+                        
+                        public static var pmu_name: String?{
+                            return getString("pmu_name")
+                        }
+                        
+                    }
+                    
                 }
                 
                 public final class Memory: FileSystemFetch{

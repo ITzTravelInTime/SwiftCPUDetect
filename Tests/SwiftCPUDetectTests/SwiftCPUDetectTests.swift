@@ -15,14 +15,14 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         print("[Test] Testing backend")
         
         #if !os(Linux)
-        let expectedValues: [String] = ["Darwin"]
+        let expectedValues: [String] = ["Darwin", "Darwin"]
         #else
-        let expectedValues: [String] = ["Linux"]
+        let expectedValues: [String] = ["Linux", "Linux"]
         #endif
         
         print("[Test] Excpected values: \(expectedValues)")
         
-        let fetched: [String?] = [Sysctl.Kernel.ostype]
+        let fetched: [String?] = [Sysctl.Kernel.ostype, UnameReimplemented.uname(withCommandLineArgs: [.s])]
         
         print("[Test] Fetched test values: \(fetched)")
         
@@ -41,6 +41,8 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         print("[Test] test done")
         
         let uname: String? = UnameReimplemented.uname(withCommandLineArgs: [.a])
+        
+        XCTAssertNotNil(uname)
         
         print("[Test] Uname -a: \(uname ?? "Can't fetch the uname value")")
         

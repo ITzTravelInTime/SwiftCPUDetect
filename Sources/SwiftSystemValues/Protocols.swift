@@ -28,6 +28,23 @@ public extension FetchProtocolBoolFromInt{
     }
 }
 
+public protocol FetchProtocolInstance{
+    func getString(_ valueName: String) -> String?
+    func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?
+    func getBool(_ valueName: String) -> Bool?
+}
+
+public protocol FetchProtocolBoolFromIntInstance: FetchProtocolInstance{}
+
+public extension FetchProtocolBoolFromIntInstance{
+    
+    ///Gets a `Bool` value
+    func getBool(_ valueName: String) -> Bool?{
+        let res: Int? = self.getInteger(valueName)
+        return res?.boolValue()
+    }
+}
+
 ///Generic protocol to allow easy fetching of values out of `sysctlbyname`
 public protocol SysctlFetch: SysctlBaseProtocol{
     static var namePrefix: String {get}
