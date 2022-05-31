@@ -11,6 +11,7 @@
 
 import Foundation
 import SwiftSystemValues
+import SwiftPackagesBase
 
 //#if !os(Linux)
 

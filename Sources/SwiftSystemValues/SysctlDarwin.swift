@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftPackagesBase
 
 #if !os(Linux)
 public typealias SysctlBaseProtocol = FetchProtocolBoolFromInt

@@ -45,16 +45,30 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         XCTAssertNotNil(uname)
         
         print("[Test] Uname -a: \(uname ?? "Can't fetch the uname value")")
-        
-        #if os(Linux)
-        
-        print("[Test] Fetched Linux cpu preset: \(SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.present ?? "")")
-        
-        print("[Test] Fetched Linux cpu values: \(SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.listFileEntriesWithValues("")!)")
-        
-        print("[Test] Fetched Linux cpu info: \(SwiftSystemValues.FileSystem.Proc.cpuinfoItems() ?? [[:]])")
-        
-        #endif
     }
+    
+    #if os(Linux)
+    func testLinux() throws{
+        
+        let cpus_present = SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.present
+        
+        XCTAssertNotNil(cpus_present)
+        
+        print("[Test] Fetched Linux cpu preset: \(cpus_present ?? "")")
+
+        let cpus_values = SwiftSystemValues.FileSystem.Sys.Devices.System.CPU.listFileEntriesWithValues("")
+        
+        XCTAssertNotNil(cpus_values)
+        
+        print("[Test] Fetched Linux cpu values: \(cpus_values ?? [:])")
+        
+        let cpuinfo_items = SwiftSystemValues.FileSystem.Proc.cpuinfoItems()
+        
+        XCTAssertNotNil(cpuinfo_items)
+
+        print("[Test] Fetched Linux cpu info: \(cpuinfo_items ?? [[:]])")
+    }
+    #endif
+    
 }
 #endif

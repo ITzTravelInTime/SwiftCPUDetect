@@ -11,40 +11,6 @@
 
 import Foundation
 
-public protocol FetchProtocol{
-    static func getString(_ valueName: String) -> String?
-    static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?
-    static func getBool(_ valueName: String) -> Bool?
-}
-
-public protocol FetchProtocolBoolFromInt: FetchProtocol{}
-
-public extension FetchProtocolBoolFromInt{
-    
-    ///Gets a `Bool` value
-    static func getBool(_ valueName: String) -> Bool?{
-        let res: Int? = Self.getInteger(valueName)
-        return res?.boolValue()
-    }
-}
-
-public protocol FetchProtocolInstance{
-    func getString(_ valueName: String) -> String?
-    func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?
-    func getBool(_ valueName: String) -> Bool?
-}
-
-public protocol FetchProtocolBoolFromIntInstance: FetchProtocolInstance{}
-
-public extension FetchProtocolBoolFromIntInstance{
-    
-    ///Gets a `Bool` value
-    func getBool(_ valueName: String) -> Bool?{
-        let res: Int? = self.getInteger(valueName)
-        return res?.boolValue()
-    }
-}
-
 ///Generic protocol to allow easy fetching of values out of `sysctlbyname`
 public protocol SysctlFetch: SysctlBaseProtocol{
     static var namePrefix: String {get}

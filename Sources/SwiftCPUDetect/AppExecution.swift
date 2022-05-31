@@ -11,6 +11,7 @@
 
 import Foundation
 import SwiftSystemValues
+import SwiftPackagesBase
 
 #if os(macOS)
 ///This enum is used to determinate if the current process is running as emulated or native

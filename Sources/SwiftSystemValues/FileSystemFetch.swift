@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftPackagesBase
 
 ///Used to fetch values from the file system
 public protocol FileSystemFetchInstance: FetchProtocolBoolFromIntInstance{
@@ -55,7 +56,7 @@ public extension FileSystemFetchInstance{
         
         Printer.print("Listing entries at path: \(path)")
         
-        if !FileManager.default.fileExists(atPath: path){
+        if !FileManager.default.directoryExists(atPath: path){
             Printer.errorPrint("Specified entry path does not exist: \(path)")
             return nil
         }
