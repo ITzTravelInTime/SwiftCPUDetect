@@ -104,7 +104,7 @@ public final class HWInfo{
         
         #if os(macOS) || os(Linux)
         
-        #if arch(x86_64) || arch(i386)
+        #if arch(x86_64) || arch(i386) //TODO: cpu features list is available for arm targets in linux
         ///Gets a string containing all the features supported by the current CPU
         ///NOTE: This information is only available on intel Macs.
         public static func features() -> String?{
@@ -163,33 +163,52 @@ public final class HWInfo{
         
         ///Gets the number of cores for each CPU package in the system
         public static func coresPerPackage() -> UInt?{
+            #if !os(Linux)
             return Sysctl.Machdep.CPU.cores_per_package
+            #else
+            #warning("implement me")
+            #endif
         }
         
         ///Gets the number of cpu threads for each CPU package in the system
         public static func threadsPerPackage() -> UInt?{
+            #if !os(Linux)
             return Sysctl.Machdep.CPU.logical_per_package
+            #else
+            #warning("implement me")
+            #endif
         }
         
         ///Gets the brand name for the current CPU
         public static func brandString() -> String?{
+            #if !os(Linux)
             //return sysctlMachdepCpuString("brand_string", bufferSize: 256)
             return Sysctl.Machdep.CPU.brand_string
+            #else
+            #warning("implement me")
+            #endif
         }
         
         #endif
         
         ///Gets if the current CPU is a 64 bit cpu
         public static func is64Bit() -> Bool{
-            
+            #if !os(Linux)
             return Sysctl.HW.cpu64bit_capable ?? CpuArchitecture.machineCurrent()?.is64Bit() ?? CpuArchitecture.binaryCurrent().is64Bit()
+            #else
+            #warning("implement me")
+            #endif
         }
         
     }
     
     ///Gets the current ammount of RAM inside the system
     public static func ramAmmount() -> UInt?{
+        #if !os(Linux)
         return Sysctl.HW.memsize
+        #else
+        #warning("implement me")
+        #endif
     }
     
 }

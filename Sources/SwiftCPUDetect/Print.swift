@@ -11,7 +11,7 @@
 
 import Foundation
 
-//the library ITzTravelInTime/SwiftLoggedPrint can be used instead of this class
+//TODO: the library ITzTravelInTime/SwiftLoggedPrint can be used instead of this class
 
 ///This class manages prints
 open class GeneralPrinter {
