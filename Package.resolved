@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftPackagesBase",
+        "repositoryURL": "https://github.com/ITzTravelInTime/SwiftPackagesBase",
+        "state": {
+          "branch": null,
+          "revision": "cc0111148a0ff3d7efb523bf50ec0b9dface1502",
+          "version": "0.0.14"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

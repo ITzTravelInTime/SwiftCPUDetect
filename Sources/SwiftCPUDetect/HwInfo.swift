@@ -52,7 +52,7 @@ public extension CPUInfo{
     
     ///The ammount L1 Instruction cache
     static func l1InstructionCacheAmmount() -> UInt?{
-#if !os(Linux)
+        #if !os(Linux)
         return Reference.l1icachesize
         #else
         #warning("implement me")
@@ -187,6 +187,7 @@ public final class HWInfo{
             #else
             #warning("implement me")
             #endif
+            
         }
         
         #endif

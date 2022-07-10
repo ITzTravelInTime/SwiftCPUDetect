@@ -174,7 +174,7 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
         return .ppc64
         #endif
         
-        #if arch(powerpc64le) && _endian(little)
+        #if (arch(powerpc64le) || arch(powerpc64)) && _endian(little)
         return .ppc64le
         #endif
         
