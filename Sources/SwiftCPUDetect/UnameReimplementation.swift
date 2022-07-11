@@ -19,11 +19,11 @@ public final class UnameReimplemented{
         
     ///Structure containing the uname information
     public struct UTSNameReimplemented{
-        let sysname: String
-        let nodename: String
-        let release: String
-        let version: String
-        let machine: String
+        public let sysname: String
+        public let nodename: String
+        public let release: String
+        public let version: String
+        public let machine: String
         
         ///Fetches and returns the uname data, the data is cached to save time on re-fetching, since it remains constant trought the lifetime of a program while running
         public static func fromSysctl(_ forceNewFetch: Bool = false) -> Self?{
