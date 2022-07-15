@@ -184,7 +184,7 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     public static func machineCurrent() -> Self?{
         guard let arch = current() else { return nil }
         
-        #if os(macOS)
+        #if os(macOS) || targetEnvironment(macCatalyst)
         guard let mode = AppExecutionMode.current() else{
             Printer.errorPrint("Can't get execution mode for the app, defaulting to current architecture")
             return arch

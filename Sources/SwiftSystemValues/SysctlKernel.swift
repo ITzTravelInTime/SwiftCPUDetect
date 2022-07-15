@@ -40,7 +40,7 @@ public extension Sysctl{
             return Self.getString("osreleasetype")
         }
         
-        #if os(macOS)
+        #if os(macOS) || targetEnvironment(macCatalyst)
         ///the current version number for the macOS support for ios software
         public static var iossupportversion: String?{
             return Self.getString("iossupportversion")

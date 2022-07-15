@@ -15,7 +15,7 @@ import Foundation
 public final class Sysctl: SysctlFetch{
     public static let namePrefix: String = ""
     
-    #if os(macOS)
+    #if os(macOS) || targetEnvironment(macCatalyst)
     ///Object to read `sysctl sysctl` entries
     public final class Sysctl: SysctlFetch{
         public static let namePrefix: String = "sysctl."

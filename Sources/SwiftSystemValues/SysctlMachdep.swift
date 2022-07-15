@@ -19,7 +19,7 @@ public extension Sysctl{
     final class Machdep: SysctlFetch{
         public static let namePrefix: String = "machdep."
         
-        #if os(macOS)
+        #if os(macOS) || targetEnvironment(macCatalyst)
         
         ///Object to read `sysctl machdep.cpu` entries
         ///NOTE: Some entries are available on intel only

@@ -13,7 +13,7 @@ import Foundation
 import SwiftSystemValues
 import SwiftPackagesBase
 
-#if os(macOS)
+#if os(macOS) || targetEnvironment(macCatalyst)
 ///This enum is used to determinate if the current process is running as emulated or native
 public enum AppExecutionMode: Int32, Hashable, DetectProtocol{
     @available(*, deprecated) case unkown = -1

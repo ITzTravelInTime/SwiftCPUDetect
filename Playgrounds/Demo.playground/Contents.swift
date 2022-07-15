@@ -7,7 +7,7 @@ SwiftCPUDetect.GeneralPrinter.enabled = false
 var str = " "
 
 //those prints gets various info about the cpu
-#if os(macOS)
+#if os(macOS) || targetEnvironment(macCatalyst)
 
 print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
 

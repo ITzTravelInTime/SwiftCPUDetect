@@ -69,7 +69,7 @@ public extension Sysctl{
             return Self.getInteger("model")
         }
         
-        #if os(macOS) && (arch(x86_64) || arch(i386))
+        #if (os(macOS) || targetEnvironment(macCatalyst)) && (arch(x86_64) || arch(i386))
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static var packages: UInt?{
