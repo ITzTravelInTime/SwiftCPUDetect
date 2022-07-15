@@ -58,3 +58,4 @@ print("My app supports those architectures: " + str.dropLast())
 //Testing the uname fetching
 print("Device's `uname -a`: \(UnameReimplemented.uname(withCommandLineArgs: [.a]) ?? "[Failed to get the uname string]")")
 
+//TODO: Add gpu detection
