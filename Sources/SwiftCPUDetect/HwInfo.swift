@@ -102,7 +102,7 @@ public final class HWInfo{
         
         //Info functions
         
-        #if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+        #if os(macOS) || targetEnvironment(macCatalyst) || targetEnvironment(simulator) || os(Linux)
         
         #if arch(x86_64) || arch(i386) //TODO: cpu features list is available for arm targets in linux
         ///Gets a string containing all the features supported by the current CPU
@@ -129,6 +129,7 @@ public final class HWInfo{
             return ret
         }
         
+        #if !targetEnvironment(simulator)
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static func packagesCount() -> UInt?{
@@ -161,6 +162,8 @@ public final class HWInfo{
         
         #endif
         
+        #endif
+        
         ///Gets the number of cores for each CPU package in the system
         public static func coresPerPackage() -> UInt?{
             #if !os(Linux)
@@ -179,7 +182,7 @@ public final class HWInfo{
             #endif
         }
         
-        #if os(macOS) || targetEnvironment(macCatalyst)
+        #if os(macOS) || targetEnvironment(macCatalyst) || targetEnvironment(simulator)
         ///Gets the brand name for the current CPU
         public static func brandString() -> String?{
             #if !os(Linux)
@@ -192,14 +195,16 @@ public final class HWInfo{
         }
         #endif
         
-        public static func name() -> String?{
+        #endif
+        
+        @available(iOS 8.0, *) public static func name() -> String?{
             #if !os(Linux)
             
                 #if os(watchOS)
                     #warning("Implement me")
                     return nil
                 #else
-                    #if !os(macOS) && !targetEnvironment(macCatalyst)
+                    #if !os(macOS) && !targetEnvironment(macCatalyst) && !targetEnvironment(simulator)
                         return GPUDetection.mainMetalGPU()?.name.replacingOccurrences(of: "GPU", with: "")
                     #else
                         return brandString()
@@ -211,8 +216,6 @@ public final class HWInfo{
                 #warning("implement me")
             #endif
         }
-        
-        #endif
         
         ///Gets if the current CPU is a 64 bit cpu
         public static func is64Bit() -> Bool{

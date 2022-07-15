@@ -9,8 +9,6 @@ var str = " "
 //those prints gets various info about the cpu
 #if os(macOS) || targetEnvironment(macCatalyst)
 
-print("Brand string for CPU is \"\(HWInfo.CPU.brandString() ?? "[Not detected]")\"")
-
 print("This cpu has \"\(HWInfo.CPU.coresPerPackage() ?? 255)\" cores for each package")
 print("This cpu has \"\(HWInfo.CPU.threadsPerPackage() ?? 255)\" threads for each package")
 
@@ -28,6 +26,8 @@ print("This system has \"\(HWInfo.CPU.packagesCount() ?? 255)\" cpu packages")
 print("Is my app running with Rosetta? \((AppExecutionMode.current() == .emulated) ? "Yes" : "No")")
 
 #endif
+
+print("The name of the CPU is \"\(HWInfo.CPU.name() ?? "[Not detected]")\"")
 
 print("This cpu has \"\(HWInfo.CPU.coresCount() ?? 255)\" cores")
 print("This cpu has \"\(HWInfo.CPU.threadsCount() ?? 255)\" threads")
