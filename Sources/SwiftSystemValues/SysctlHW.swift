@@ -19,6 +19,11 @@ public extension Sysctl{
     final class HW: SysctlCPUInfo{
         public static let namePrefix: String = "hw."
         
+        ///Gets the ammunt of perf levels of the current system
+        public static var nperflevels: UInt?{
+            return getInteger("nperflevels")
+        }
+        
         ///Gets the ammount of currently active cpu threads
         public static var activecpu: UInt?{
             return Self.getInteger("activecpu")
@@ -87,6 +92,30 @@ public extension Sysctl{
         public static var busfrequency: UInt64?{
             return Self.getInteger("busfrequency")
         }
+        
+        ///Gets the nominal max cpu frequency in Hz
+        ///NOTE: This information is only available on intel Macs.
+        public static var cpufrequency_max: UInt64?{
+            return Self.getInteger("cpufrequency_max")
+        }
+        
+        ///Gets the nominal max cpu bus frequency in Hz
+        ///NOTE: This information is only available on intel Macs.
+        public static var busfrequency_max: UInt64?{
+            return Self.getInteger("busfrequency_max")
+        }
+        
+        ///Gets the nominal min cpu frequency in Hz
+        ///NOTE: This information is only available on intel Macs.
+        public static var cpufrequency_min: UInt64?{
+            return Self.getInteger("cpufrequency_min")
+        }
+        
+        ///Gets the nominal min cpu bus frequency in Hz
+        ///NOTE: This information is only available on intel Macs.
+        public static var busfrequency_min: UInt64?{
+            return Self.getInteger("busfrequency_min")
+        }
         #endif
         
         ///Object to read `sysctl hw.optional` entries
@@ -104,12 +133,17 @@ public extension Sysctl{
         
         ///Object to read `sysctl hw.preflevel0` entries
         public final class Perflevel0: SysctlPerflevel{
-            public static var index: UInt8 = 0
+            public static let index: UInt8 = 0
         }
         
         ///Object to read `sysctl hw.preflevel1` entries
         public final class Perflevel1: SysctlPerflevel{
-            public static var index: UInt8 = 1
+            public static let index: UInt8 = 1
+        }
+        
+        ///Object to read `sysctl hw.preflevel[x]` entries
+        public final class PerflevelGeneralPurpose: SysctlPerflevel{
+            public static var index: UInt8 = 0
         }
     }
 }

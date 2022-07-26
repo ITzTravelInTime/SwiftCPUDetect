@@ -53,6 +53,36 @@ public extension Sysctl{
             
             #if (arch(x86_64) || arch(i386))
             
+            ///Gets a string containing the cpu family for the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var family: UInt?{
+                return Self.getInteger("family")
+            }
+            
+            ///Gets a string containing the cpu model for the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var model: UInt?{
+                return Self.getInteger("model")
+            }
+            
+            ///Gets a string containing the cpu stepping for the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var stepping: UInt?{
+                return Self.getInteger("stepping")
+            }
+            
+            ///Gets a string containing the cpu stepping for the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var extfamily: UInt?{
+                return Self.getInteger("extfamily")
+            }
+            
+            ///Gets a string containing the cpu stepping for the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var extmodel: UInt?{
+                return Self.getInteger("extmodel")
+            }
+            
             ///Gets a string containing all the features supported by the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var features: String?{
