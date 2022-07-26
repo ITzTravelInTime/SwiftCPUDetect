@@ -14,6 +14,13 @@ import SwiftPackagesBase
 
 public final class CPUID{
     public struct Registers: Copying{
+        public init(eax: UInt32 = 0, ebx: UInt32 = 0, ecx: UInt32 = 0, edx: UInt32 = 0) {
+            self.eax = eax
+            self.ebx = ebx
+            self.ecx = ecx
+            self.edx = edx
+        }
+        
         public func copy() -> Self {
             return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
