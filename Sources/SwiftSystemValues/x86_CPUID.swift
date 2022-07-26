@@ -19,10 +19,10 @@ public final class CPUID{
             return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
         
-        let eax: UInt32
-        let ebx: UInt32
-        let ecx: UInt32
-        let edx: UInt32
+        public let eax: UInt32
+        public let ebx: UInt32
+        public let ecx: UInt32
+        public let edx: UInt32
         
         ///Returns the current registers state after performing the cpuid function for the specified level
         public static func from(level: UInt32) -> Self?{
