@@ -110,7 +110,25 @@ public final class HWInfo{
         public static func features() -> String?{
             //return sysctlMachdepCpuString("features", bufferSize: 512)
             #if !os(Linux)
-            return Sysctl.Machdep.CPU.features
+            if Sysctl.Machdep.CPU.features == nil && Sysctl.Machdep.CPU.leaf7_features == nil{
+                return nil
+            }
+            
+            var ret = (Sysctl.Machdep.CPU.features ?? "") + " " + (Sysctl.Machdep.CPU.leaf7_features ?? "")
+            
+            if ret == " "{
+                return nil
+            }
+            
+            if ret.starts(with: " "){
+                ret.removeFirst()
+            }
+            
+            if ret.hasSuffix(" "){
+                ret.removeLast()
+            }
+            
+            return ret
             #else
             #warning("implement me")
             #endif

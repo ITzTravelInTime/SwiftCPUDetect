@@ -60,6 +60,13 @@ public extension Sysctl{
                 return Self.getString("features")
             }
             
+            ///Gets a string containing all the extra leaf7 features supported by the current CPU
+            ///NOTE: This information is only available on intel Macs.
+            public static var leaf7_features: String?{
+                //return sysctlMachdepCpuString("features", bufferSize: 512)
+                return Self.getString("leaf7_features")
+            }
+            
             ///Object to read `sysctl machdep.cpu.address_bits entries
             ///NOTE: It might be available only on intel macs
             public final class Address_bits: SysctlFetch{
