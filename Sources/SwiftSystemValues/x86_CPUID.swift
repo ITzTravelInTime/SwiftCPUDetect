@@ -18,10 +18,10 @@ public final class CPUID{
             return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
         
-        var eax: UInt32 = 0
-        var ebx: UInt32 = 0
-        var ecx: UInt32 = 0
-        var edx: UInt32 = 0
+        public var eax: UInt32 = 0
+        public var ebx: UInt32 = 0
+        public var ecx: UInt32 = 0
+        public var edx: UInt32 = 0
         
         public mutating func performCPUIDData(_ leaf: UInt32) -> Int32{
             return __get_cpuid(leaf, &eax, &ebx, &ecx, &edx)
