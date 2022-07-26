@@ -14,36 +14,29 @@ import SwiftPackagesBase
 
 public final class CPUID{
     public struct Registers: Copying{
-        public init(eax: UInt32 = 0, ebx: UInt32 = 0, ecx: UInt32 = 0, edx: UInt32 = 0) {
-            self.eax = eax
-            self.ebx = ebx
-            self.ecx = ecx
-            self.edx = edx
-        }
         
         public func copy() -> Self {
             return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
         
-        public var eax: UInt32 = 0
-        public var ebx: UInt32 = 0
-        public var ecx: UInt32 = 0
-        public var edx: UInt32 = 0
+        let eax: UInt32
+        let ebx: UInt32
+        let ecx: UInt32
+        let edx: UInt32
         
-        public mutating func performCPUIDData(_ leaf: UInt32) -> Int32{
-            return __get_cpuid(leaf, &eax, &ebx, &ecx, &edx)
-        }
-        
-        public func performingCPUIDData(_ leaf: UInt32, returnValue retVal: UnsafeMutablePointer<Int32>! = nil) -> Self{
-            var ret = copy()
+        ///Returns the current registers state after performing the cpuid function for the specified level
+        public static func from(level: UInt32) -> Self?{
             
-            let val = ret.performCPUIDData(leaf)
+            var eax: UInt32 = 0
+            var ebx: UInt32 = 0
+            var ecx: UInt32 = 0
+            var edx: UInt32 = 0
             
-            if retVal != nil{
-                retVal?.pointee = val
+            if __get_cpuid(level, &eax, &ebx, &ecx, &edx) == 0{
+                return nil
             }
             
-            return ret
+            return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
     }
     
