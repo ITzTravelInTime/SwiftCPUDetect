@@ -38,6 +38,21 @@ public final class CPUID{
             
             return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
+        
+        ///Returns the current registers state after performing the cpuid function for the specified level
+        public static func from(level: UInt32, extendedLevel: UInt32) -> Self?{
+            
+            var eax: UInt32 = 0
+            var ebx: UInt32 = 0
+            var ecx: UInt32 = 0
+            var edx: UInt32 = 0
+            
+            if __get_cpuid_count(level, extendedLevel, &eax, &ebx, &ecx, &edx) == 0{
+                return nil
+            }
+            
+            return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx)
+        }
     }
     
     
