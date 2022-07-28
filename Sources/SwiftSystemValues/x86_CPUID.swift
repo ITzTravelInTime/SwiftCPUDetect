@@ -12,8 +12,9 @@ import Foundation
 #if (arch(x86_64) || arch(i386))
 import _Builtin_intrinsics.intel
 import _Builtin_intrinsics.intel.cpuid
-import SwiftPackagesBase
 #endif
+
+import SwiftPackagesBase
 
 public final class CPUID{
     public struct Registers: Copying, Codable, Equatable{
