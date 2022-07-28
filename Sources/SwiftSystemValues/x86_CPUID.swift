@@ -40,16 +40,24 @@ public final class CPUID{
         ///The contents of the ECX register before the CPUID instruction
         public let queryLevel2: UInt32?
         
+        #if (arch(x86_64) || arch(i386))
         ///Regulates if queries must be stored in cache
         public static var storeQueryInCache: Bool = true
         
         ///Regulates if the queries shuld be taken from cache instead of being taken frm the system each time
         public static var recoverFromCache: Bool = false
+        #endif
         
         ///Returns the current registers state after performing the cpuid function for the specified levels
         public static func from(level: UInt32, extendedLevel: UInt32? = nil, doNotRecoverFromCache: Bool = false ) -> Self?{
             
-            if recoverFromCache && !doNotRecoverFromCache{
+            #if (arch(x86_64) || arch(i386))
+            let recover = recoverFromCache && !doNotRecoverFromCache
+            #else
+            let recover = true
+            #endif
+            
+            if recover {
                 var ret: Self? = nil
                 
                 for data in queryCache where data.queryLevel1 == level && data.queryLevel2 == extendedLevel {
