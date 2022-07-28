@@ -7,10 +7,13 @@
 
 import Foundation
 
-#if (arch(x86_64) || arch(i386)) && !(os(Linux) || os(Windows))
+#if !(os(Linux) || os(Windows))
+
+#if (arch(x86_64) || arch(i386))
 import _Builtin_intrinsics.intel
 import _Builtin_intrinsics.intel.cpuid
 import SwiftPackagesBase
+#endif
 
 public final class CPUID{
     public struct Registers: Copying, Codable, Equatable{
@@ -57,6 +60,7 @@ public final class CPUID{
                 }
             }
             
+            #if (arch(x86_64) || arch(i386))
             var eax: UInt32 = 0
             var ebx: UInt32 = 0
             var ecx: UInt32 = 0
@@ -79,6 +83,9 @@ public final class CPUID{
             }
             
             return ret
+            #else
+            return nil
+            #endif
         }
     }
     
