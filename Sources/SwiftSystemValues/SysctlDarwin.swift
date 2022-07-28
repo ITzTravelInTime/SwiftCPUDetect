@@ -14,7 +14,7 @@ public typealias SysctlBaseProtocol = FetchProtocolBoolFromInt
 public final class SysctlQueryStorage{
     public static var enabled = true
     public static var recoverEveryQueryFromStorage = false
-    public static var records: [String: Any] = [:]
+    public static var records: [String: String] = [:]
 }
 
 public extension SysctlFetch{
@@ -25,7 +25,7 @@ public extension SysctlFetch{
         let name = namePrefix + valueName
         
         if SysctlQueryStorage.recoverEveryQueryFromStorage && SysctlQueryStorage.enabled{
-            if let record = SysctlQueryStorage.records[name] as? String{
+            if let record = SysctlQueryStorage.records[name]{
                 return record
             }
         }
@@ -57,8 +57,8 @@ public extension SysctlFetch{
         let name = namePrefix + valueName
         
         if SysctlQueryStorage.recoverEveryQueryFromStorage && SysctlQueryStorage.enabled{
-            if let record = SysctlQueryStorage.records[name] as? T{
-                return record
+            if let record = SysctlQueryStorage.records[name], let converted = T(record){
+                return converted
             }
         }
         
@@ -70,8 +70,8 @@ public extension SysctlFetch{
         
         let returnVal = res == 0 ? ret : nil
         
-        if SysctlQueryStorage.enabled{
-            SysctlQueryStorage.records[name] = returnVal
+        if SysctlQueryStorage.enabled, let returnV = returnVal{
+            SysctlQueryStorage.records[name] = "\(returnV)"
         }
         
         return returnVal
