@@ -11,14 +11,26 @@ import SwiftPackagesBase
 #if !os(Linux)
 public typealias SysctlBaseProtocol = FetchProtocolBoolFromInt
 
+public final class SysctlQueryStorage{
+    public static var enabled = true
+    public static var recoverEveryQueryFromStorage = false
+    public static var records: [String: Any] = [:]
+}
+
 public extension SysctlFetch{
     
     ///Gets a `String` from the `sysctlbyname` function
     static func getString(_ valueName: String) -> String?{
         
-        var size: size_t = 0
-        
         let name = namePrefix + valueName
+        
+        if SysctlQueryStorage.recoverEveryQueryFromStorage && SysctlQueryStorage.enabled{
+            if let record = SysctlQueryStorage.records[name] as? String{
+                return record
+            }
+        }
+        
+        var size: size_t = 0
         
         var res = Darwin.sysctlbyname(name, nil, &size, nil, 0)
         
@@ -30,18 +42,39 @@ public extension SysctlFetch{
         
         res = Darwin.sysctlbyname(name, &ret, &size, nil, 0)
         
-        return res == 0 ? String(cString: ret) : nil
+        let returnVal = res == 0 ? String(cString: ret) : nil
+        
+        if SysctlQueryStorage.enabled{
+            SysctlQueryStorage.records[name] = returnVal
+        }
+        
+        return returnVal
     }
     
     ///Gets an Integer value from the `sysctlbyname` function
     static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
+        
+        let name = namePrefix + valueName
+        
+        if SysctlQueryStorage.recoverEveryQueryFromStorage && SysctlQueryStorage.enabled{
+            if let record = SysctlQueryStorage.records[name] as? T{
+                return record
+            }
+        }
+        
         var ret = T()
         
         var size = MemoryLayout.size(ofValue: ret)
         
-        let res = Darwin.sysctlbyname(namePrefix + valueName, &ret, &size, nil, 0)
+        let res = Darwin.sysctlbyname(name, &ret, &size, nil, 0)
         
-        return res == 0 ? ret : nil
+        let returnVal = res == 0 ? ret : nil
+        
+        if SysctlQueryStorage.enabled{
+            SysctlQueryStorage.records[name] = returnVal
+        }
+        
+        return returnVal
     }
     
 }
