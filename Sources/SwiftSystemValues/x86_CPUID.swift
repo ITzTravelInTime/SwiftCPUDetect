@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if !(os(Linux) || os(Windows))
+#if !(os(Windows))
 
 #if (arch(x86_64) || arch(i386))
 import _Builtin_intrinsics.intel

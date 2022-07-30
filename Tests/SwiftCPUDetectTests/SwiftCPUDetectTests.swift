@@ -47,6 +47,45 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         print("[Test] Uname -a: \(uname ?? "Can't fetch the uname value")")
     }
     
+    func testCPUID() throws{
+        print("[Test] Performing CPUID test")
+        
+        let random1 = UInt32.random(in: 0...UInt32.max)
+        let random2 = UInt32.random(in: 0...UInt32.max)
+        let random3 = UInt32.random(in: 0...UInt32.max)
+        
+        #if arch(x86_64) || arch(i386)
+        CPUID.Registers.recoverFromCache = true
+        CPUID.Registers.storeQueryInCache = false
+        #endif
+        
+        CPUID.Registers.queryCache.append(.init(eax: .max, ebx: random1, ecx: random2, edx: random3, queryLevel1: 1, queryLevel2: nil))
+        
+        XCTAssertEqual(CPUID.Registers.from(level: 1)?.eax, .max,    "EAX Value recovered from cache doesn't match")
+        XCTAssertEqual(CPUID.Registers.from(level: 1)?.ebx, random1, "EBX Value recovered from cache doesn't match")
+        XCTAssertEqual(CPUID.Registers.from(level: 1)?.ecx, random2, "ECX Value recovered from cache doesn't match")
+        XCTAssertEqual(CPUID.Registers.from(level: 1)?.edx, random3, "EDX Value recovered from cache doesn't match")
+        
+        #if arch(x86_64) || arch(i386)
+        CPUID.Registers.recoverFromCache = false
+        
+        let testQuery = CPUID.Registers.from(level: 1)
+        
+        XCTAssertNotNil(CPUID.Registers.from(level: 1), "Test query is nil")
+        
+        if testQuery != nil{
+            print(testQuery!)
+        }
+        
+        XCTAssertNotNil(CPUID.Registers.from(level: 1)?.eax, "EAX Value is nil")
+        XCTAssertNotNil(CPUID.Registers.from(level: 1)?.ebx, "EBX Value is nil")
+        XCTAssertNotNil(CPUID.Registers.from(level: 1)?.ecx, "ECX Value is nil")
+        XCTAssertNotNil(CPUID.Registers.from(level: 1)?.edx, "EDX Value is nil")
+        #endif
+        
+        print("[Test] Performing CPUID end")
+    }
+    
     #if os(Linux)
     func testLinux() throws{
         
