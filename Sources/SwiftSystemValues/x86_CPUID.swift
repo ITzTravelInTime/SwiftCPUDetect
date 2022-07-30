@@ -7,8 +7,6 @@
 
 import Foundation
 
-#if !(os(Windows))
-
 #if (arch(x86_64) || arch(i386))
 import _Builtin_intrinsics.intel
 import _Builtin_intrinsics.intel.cpuid
@@ -54,7 +52,7 @@ public final class CPUID{
             #if (arch(x86_64) || arch(i386))
             let recover = recoverFromCache && !doNotRecoverFromCache
             #else
-            let recover = true
+            let recover = !doNotRecoverFromCache
             #endif
             
             if recover {
@@ -101,4 +99,3 @@ public final class CPUID{
     
 }
 
-#endif
