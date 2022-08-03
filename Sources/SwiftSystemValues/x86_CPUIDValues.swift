@@ -40,7 +40,7 @@ public extension CPUID{
     }
     
     ///Returns the model value of the CPU
-    static func model() -> FlagsIntegerFormat?{
+    static func standard_model() -> FlagsIntegerFormat?{
         guard let model = queryAndReturnEAXBits(leaf: 1, firstBit: 4, lastBit: 7) else { return nil }
         guard let family = queryAndReturnEAXBits(leaf: 1, firstBit: 8, lastBit: 11) else { return nil }
         
@@ -53,8 +53,8 @@ public extension CPUID{
         }
     }
     
-    ///Returns the family value of the CPU
-    static func family() -> FlagsIntegerFormat?{
+    ///Returns the family value of the CPU 
+    static func standard_family() -> FlagsIntegerFormat?{
         guard let familyField = queryAndReturnEAXBits(leaf: 1, firstBit: 8, lastBit: 11) else { return nil }
         
         if familyField == 15{
@@ -79,6 +79,16 @@ public extension CPUID{
     ///Returns the extended model value of the CPU
     static func extModel() -> FlagsIntegerFormat?{
         return queryAndReturnEAXBits(leaf: 1, firstBit: 16, lastBit: 19)
+    }
+    
+    ///Returns the model value of the CPU as provided by the CPUID instruction
+    static func model() -> FlagsIntegerFormat?{
+        return queryAndReturnEAXBits(leaf: 1, firstBit: 4, lastBit: 7)
+    }
+    
+    ///Returns the family value of the CPU as provided by the CPUID instruction
+    static func family() -> FlagsIntegerFormat?{
+        return queryAndReturnEAXBits(leaf: 1, firstBit: 8, lastBit: 11)
     }
     
     ///Returns the CPU's brand srtring
