@@ -47,13 +47,13 @@ public extension CPUID{
         if family == 6 || family == 15{
             guard let extendedModel = extModel() else { return nil }
             
-            return (extendedModel << 4) + model
+            return (extendedModel << 4) | model
         }else{
             return model
         }
     }
     
-    ///Returns the family value of the CPU 
+    ///Returns the family value of the CPU
     static func standard_family() -> FlagsIntegerFormat?{
         guard let familyField = queryAndReturnEAXBits(leaf: 1, firstBit: 8, lastBit: 11) else { return nil }
         

@@ -59,6 +59,11 @@ public extension Sysctl{
             return Self.getInteger("cpufamily")
         }
         
+        ///gets the current cpu subfamily integer
+        public static var cpusubfamily: UInt32?{
+            return Self.getInteger("cpusubfamily")
+        }
+        
         ///Gets if the current CPU is a 64 bit cpu
         public static var cpu64bit_capable: Bool?{
             return Self.getBool("cpu64bit_capable")
