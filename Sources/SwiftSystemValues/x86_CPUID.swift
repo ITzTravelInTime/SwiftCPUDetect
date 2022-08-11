@@ -73,8 +73,10 @@ public final class CPUID{
             var ecx: UInt32 = 0
             var edx: UInt32 = 0
             
-            if let extended = extendedLevel, __get_cpuid_count(level, extended, &eax, &ebx, &ecx, &edx) == 0{
-                return nil
+            if let extended = extendedLevel{
+                if __get_cpuid_count(level, extended, &eax, &ebx, &ecx, &edx) == 0{
+                    return nil
+                }
             } else if __get_cpuid(level, &eax, &ebx, &ecx, &edx) == 0{
                 return nil
             }
