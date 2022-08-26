@@ -9,7 +9,7 @@ import Foundation
 import SwiftPackagesBase
 
 ///Used to fetch values from the file system
-public protocol FileSystemFetchInstance: FetchProtocolBoolFromIntInstance{
+public protocol FileSystemFetchInstance: FetchProtocolDataBoolFromIntInstance{
     var subfolder: String { get }
 }
 
@@ -49,6 +49,26 @@ public extension FileSystemFetchInstance{
         return T(str)
     }
     
+    ///Gets a `Data` from `/proc`
+    func getData(_ valueName: String) -> Data?{
+        
+        let path = getPath(forItem: valueName)
+        var contents: Data
+        
+        Printer.print("Fetching value for linux sysctl pseudofile path: \(path)")
+        
+        do{
+            contents = try Data(contentsOf: URL(fileURLWithPath: path))
+        }catch let err{
+            Printer.errorPrint("Value fetching failed \(err.localizedDescription)")
+            print(err.localizedDescription)
+            return nil
+        }
+        
+        Printer.print("Fetched value: \(contents)")
+        
+        return contents
+    }
     
     ///Gets a list of file system entries for the speficied subfolder name
     func listEntries(_ tableName: String) -> [String: Bool]?{
@@ -134,7 +154,7 @@ public extension FileSystemFetchInstance{
 }
 
 ///Used to fetch values from the file system
-public protocol FileSystemFetch: FetchProtocolBoolFromInt{
+public protocol FileSystemFetch: FetchProtocolDataBoolFromInt{
     static var subfolder: String { get }
 }
 
@@ -152,6 +172,11 @@ public extension FileSystemFetch{
     ///Gets an Integer value from `/proc`
     static func getInteger<T: FixedWidthInteger>(_ valueName: String) -> T?{
         return BrigeFetcher(subfolder: Self.subfolder).getInteger(valueName)
+    }
+    
+    ///Gets a `Data` from `/proc`
+    static func getData(_ valueName: String) -> Data?{
+        return BrigeFetcher(subfolder: Self.subfolder).getData(valueName)
     }
     
     ///Gets a list of file system entries for the speficied subfolder name
