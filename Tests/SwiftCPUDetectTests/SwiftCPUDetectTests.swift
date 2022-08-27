@@ -80,7 +80,7 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         XCTAssertEqual(CPUID.family(), 0x06, "CPU Family is wrong")
         XCTAssertEqual(CPUID.extFamily(), 0x00, "CPU Extended Family is wrong")
         
-        XCTAssertEqual(CPUID.model(), 0x9E, "CPU Model is wrong")
+        XCTAssertEqual(CPUID.model(), 0x0E, "CPU Model is wrong")
         XCTAssertEqual(CPUID.extModel(), 0x09, "CPU Extended Model is wrong")
         
         XCTAssertEqual(CPUID.stepping(), 0x09, "CPU Stepping is wrong")
