@@ -16,11 +16,19 @@ import SwiftPackagesBase
 
 public final class CPUID{
     public struct Registers: Copying, Codable, Equatable{
+        public init(queryLevel1: UInt32, queryLevel2: UInt32? = nil, eax: UInt32, ebx: UInt32, ecx: UInt32, edx: UInt32) {
+            self.eax = eax
+            self.ebx = ebx
+            self.ecx = ecx
+            self.edx = edx
+            self.queryLevel1 = queryLevel1
+            self.queryLevel2 = queryLevel2
+        }
         
         public static var queryCache: [Self] = []
         
         public func copy() -> Self {
-            return .init(eax: eax, ebx: ebx, ecx: ecx, edx: edx, queryLevel1: queryLevel1, queryLevel2: queryLevel2)
+            return .init(queryLevel1: queryLevel1, queryLevel2: queryLevel2, eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
         
         ///The contents of the EAX register after the CPUID instruction
@@ -81,7 +89,7 @@ public final class CPUID{
                 return nil
             }
             
-            let ret = Self.init(eax: eax, ebx: ebx, ecx: ecx, edx: edx, queryLevel1: level, queryLevel2: extendedLevel)
+            let ret = Self.init(queryLevel1: level, queryLevel2: extendedLevel, eax: eax, ebx: ebx, ecx: ecx, edx: edx)
             
             if storeQueryInCache{
                 queryCache.append(ret)

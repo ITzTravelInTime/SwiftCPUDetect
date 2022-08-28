@@ -61,7 +61,7 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         CPUID.Registers.storeQueryInCache = false
         #endif
         
-        CPUID.Registers.queryCache.append(.init(eax: .max, ebx: random1, ecx: random2, edx: random3, queryLevel1: 1, queryLevel2: nil))
+        CPUID.Registers.queryCache.append(.init(queryLevel1: 1, queryLevel2: nil, eax: .max, ebx: random1, ecx: random2, edx: random3))
         
         //Sanity test
         XCTAssertEqual(CPUID.Registers.from(level: 1)?.eax, .max,    "EAX Value recovered from cache doesn't match")
@@ -70,11 +70,11 @@ final class SwiftLinuxSysctlTests: XCTestCase {
         XCTAssertEqual(CPUID.Registers.from(level: 1)?.edx, random3, "EDX Value recovered from cache doesn't match")
         
         CPUID.Registers.queryCache.removeAll()
-        CPUID.Registers.queryCache.append(.init(eax: 591593, ebx: 34605056, ecx: 2147154879, edx: 3219913727, queryLevel1: 1, queryLevel2: nil))
+        CPUID.Registers.queryCache.append(.init(queryLevel1: 1, queryLevel2: nil, eax: 591593, ebx: 34605056, ecx: 2147154879, edx: 3219913727))
         
-        CPUID.Registers.queryCache.append(.init(eax: 1702129225, ebx: 693250156, ecx: 1919894304, edx: 1297360997, queryLevel1: 2147483650, queryLevel2: nil))
-        CPUID.Registers.queryCache.append(.init(eax: 929636393, ebx: 808924973, ecx: 542197808, edx: 542462019, queryLevel1: 2147483651, queryLevel2: nil))
-        CPUID.Registers.queryCache.append(.init(eax: 775036992, ebx: 1212624952, ecx: 122, edx: 0, queryLevel1: 2147483652, queryLevel2: nil))
+        CPUID.Registers.queryCache.append(.init(queryLevel1: 2147483650, queryLevel2: nil, eax: 1702129225, ebx: 693250156, ecx: 1919894304, edx: 1297360997))
+        CPUID.Registers.queryCache.append(.init(queryLevel1: 2147483651, queryLevel2: nil, eax: 929636393, ebx: 808924973, ecx: 542197808, edx: 542462019))
+        CPUID.Registers.queryCache.append(.init(queryLevel1: 2147483652, queryLevel2: nil, eax: 775036992, ebx: 1212624952, ecx: 122, edx: 0))
         
         //Value fetching functions tests
         XCTAssertEqual(CPUID.family(), 0x06, "CPU Family is wrong")
