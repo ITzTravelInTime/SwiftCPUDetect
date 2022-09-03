@@ -22,57 +22,57 @@ public extension Sysctl{
         
         ///The os kernel build number
         public static var osrevision: String?{
-            return Self.getString("osrevision")
+            return getString("osrevision")
         }
         
         ///The os legacy version number
         public static var osproductversioncompat: String?{
-            return Self.getString("osproductversioncompat")
+            return getString("osproductversioncompat")
         }
         
         ///The os version number
         public static var osproductversion: String?{
-            return Self.getString("osproductversion")
+            return getString("osproductversion")
         }
         
         ///The os release type
         public static var osreleasetype: String?{
-            return Self.getString("osreleasetype")
+            return getString("osreleasetype")
         }
         
         #if os(macOS) || targetEnvironment(macCatalyst)
         ///the current version number for the macOS support for ios software
         public static var iossupportversion: String?{
-            return Self.getString("iossupportversion")
+            return getString("iossupportversion")
         }
         
         #endif
         
         ///the current system boot args
         public static var bootargs: String?{
-            return Self.getString("bootargs")
+            return getString("bootargs")
         }
         
         #endif
         
         ///The os kernel version string
         public static var version: String?{
-            return Self.getString("version")
+            return getString("version")
         }
         
         ///The current hostname or device name
         public static var hostname: String?{
-            return Self.getString("hostname")
+            return getString("hostname")
         }
         
         ///The os kernel name
         public static var ostype: String?{
-            return Self.getString("ostype")
+            return getString("ostype")
         }
         
         ///The os kernel version number
         public static var osrelease: String?{
-            return Self.getString("osrelease")
+            return getString("osrelease")
         }
     }
     

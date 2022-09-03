@@ -26,100 +26,100 @@ public extension Sysctl{
         
         ///Gets the ammount of currently active cpu threads
         public static var activecpu: UInt?{
-            return Self.getInteger("activecpu")
+            return getInteger("activecpu")
         }
         
         ///Gets the ammount of cpu threads
         public static var ncpu: UInt?{
-            return Self.getInteger("ncpu")
+            return getInteger("ncpu")
         }
         
         ///Return the size of a memory page
         public static var pagesize: UInt?{
-            return Self.getInteger("pagesize")
+            return getInteger("pagesize")
         }
         
         ///gets the kenel cpu architecture (on macOS) or the current device model id (for the other platforms)
         public static var machine: String?{
-            return Self.getString("machine")
+            return getString("machine")
         }
         
         ///gets the current cpu type integer
         public static var cputype: cpu_type_t?{
-            return Self.getInteger("cputype")
+            return getInteger("cputype")
         }
         
         ///gets the current cpu subtype integer
         public static var cpusubtype: cpu_subtype_t?{
-            return Self.getInteger("cpusubtype")
+            return getInteger("cpusubtype")
         }
         
         ///gets the current cpu family integer
         public static var cpufamily: UInt32?{
-            return Self.getInteger("cpufamily")
+            return getInteger("cpufamily")
         }
         
         ///gets the current cpu subfamily integer
         public static var cpusubfamily: UInt32?{
-            return Self.getInteger("cpusubfamily")
+            return getInteger("cpusubfamily")
         }
         
         ///Gets if the current CPU is a 64 bit cpu
         public static var cpu64bit_capable: Bool?{
-            return Self.getBool("cpu64bit_capable")
+            return getBool("cpu64bit_capable")
         }
         
         ///Gets the current ammount of RAM inside the system
         public static var memsize: UInt?{
-            return Self.getInteger("memsize")
+            return getInteger("memsize")
         }
         
         ///Gets the current model identifier for the system
         public static var model: UInt?{
-            return Self.getInteger("model")
+            return getInteger("model")
         }
         
         #if (os(macOS) || targetEnvironment(macCatalyst)) && (arch(x86_64) || arch(i386))
         ///Gets the number of CPU packages inside the current system
         ///NOTE: This information is only available on intel Macs.
         public static var packages: UInt?{
-            return Self.getInteger("packages")
+            return getInteger("packages")
         }
         
         ///Gets the nominal cpu frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var cpufrequency: UInt64?{
-            return Self.getInteger("cpufrequency")
+            return getInteger("cpufrequency")
         }
         
         ///Gets the nominal cpu bus frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var busfrequency: UInt64?{
-            return Self.getInteger("busfrequency")
+            return getInteger("busfrequency")
         }
         
         ///Gets the nominal max cpu frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var cpufrequency_max: UInt64?{
-            return Self.getInteger("cpufrequency_max")
+            return getInteger("cpufrequency_max")
         }
         
         ///Gets the nominal max cpu bus frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var busfrequency_max: UInt64?{
-            return Self.getInteger("busfrequency_max")
+            return getInteger("busfrequency_max")
         }
         
         ///Gets the nominal min cpu frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var cpufrequency_min: UInt64?{
-            return Self.getInteger("cpufrequency_min")
+            return getInteger("cpufrequency_min")
         }
         
         ///Gets the nominal min cpu bus frequency in Hz
         ///NOTE: This information is only available on intel Macs.
         public static var busfrequency_min: UInt64?{
-            return Self.getInteger("busfrequency_min")
+            return getInteger("busfrequency_min")
         }
         #endif
         

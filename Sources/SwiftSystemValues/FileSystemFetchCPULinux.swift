@@ -12,7 +12,7 @@ public class FileSystemFetchCPU: FileSystemFetchInstance{
         }
         
         public var subfolder: String {
-            baseFolder + self.subfolderName
+            return baseFolder + self.subfolderName
         }
         
         fileprivate init(baseFolder: String){
@@ -91,7 +91,7 @@ public class FileSystemFetchCPU: FileSystemFetchInstance{
     }
     
     public var subfolder: String {
-        FileSystem.Sys.Devices.System.CPU.subfolder + "cpu\(cpuNumber)/"
+        return FileSystem.Sys.Devices.System.CPU.subfolder + "cpu\(cpuNumber)/"
     }
     
 }

@@ -26,12 +26,12 @@ public final class UnameReimplemented{
         public let machine: String
         
         ///Fetches and returns the uname data, the data is cached to save time on re-fetching, since it remains constant trought the lifetime of a program while running
-        public static func fromSysctl(_ forceNewFetch: Bool = false) -> Self?{
+        public static func fromSysctl(_ forceNewFetch: Bool = false) -> UTSNameReimplemented?{
             struct Mem{
                 static var content: UTSNameReimplemented? = nil
             }
             
-            var ret: Self? = forceNewFetch ? nil : Mem.content
+            var ret: UTSNameReimplemented? = forceNewFetch ? nil : Mem.content
             
             if ret == nil{
                 
@@ -71,7 +71,7 @@ public final class UnameReimplemented{
                  }
                  */
             
-                Mem.content = Self.init(sysname: sysname, nodename: nodename, release: release, version: version, machine: machine)
+                Mem.content = UTSNameReimplemented.init(sysname: sysname, nodename: nodename, release: release, version: version, machine: machine)
                 ret = Mem.content
                 
                 Printer.print("uname data is: \(ret!)") //should never be nil
@@ -89,11 +89,17 @@ public final class UnameReimplemented{
         ///Returns all uname categories
         case a
         ///Returns all uname categories
-        public static var All: Self { .a }
+        public static var All: UnameCommandLineArgs { return UnameCommandLineArgs.a }
         
         ///Returns the equivalent args for the all arg
-        public static var allEquivalent: [Self]{
-            return [.s, .n, .r, .v, .m]
+        public static var allEquivalent: [UnameCommandLineArgs]{
+            return [
+                UnameCommandLineArgs.s,
+                UnameCommandLineArgs.n,
+                UnameCommandLineArgs.r,
+                UnameCommandLineArgs.v,
+                UnameCommandLineArgs.m
+            ]
         }
         
         //machine hardware name
@@ -101,44 +107,44 @@ public final class UnameReimplemented{
         ///Returns the device model or the device architecture (for macs)
         case m
         ///Returns the device model or the device architecture (for macs)
-        public static var machineHardwareName: Self { .m }
+        public static var machineHardwareName: UnameCommandLineArgs { return UnameCommandLineArgs.m }
         
         //node name aka hostname
         
         ///Returns the device hostname
         case n
         ///Returns the device hostname
-        public static var nodeName: Self { .n }
+        public static var nodeName: UnameCommandLineArgs { return UnameCommandLineArgs.n }
         
         //processor architecture
         
         ///Returns the generic processor type
         case p
         ///Returns the generic processor type
-        public static var genericProcessorType: Self { .p }
+        public static var genericProcessorType: UnameCommandLineArgs { return UnameCommandLineArgs.p }
         
         //os name, also the default arg
         
         ///Returns the os kernel name
         case s
         ///Returns the os kernel name
-        public static var operatingSystemName: Self { .s }
+        public static var operatingSystemName: UnameCommandLineArgs { return UnameCommandLineArgs.s }
         ///The default arg which returns the os kernel name
-        public static var defaultArg: Self { .s }
+        public static var defaultArg: UnameCommandLineArgs { return UnameCommandLineArgs.s }
         
         //os kernel version number
         
         ///Returns the os kernel release number
         case r
         ///Returns the os kernel release number
-        public static var operatingSystemKernelReleaseNumber: Self { .r }
+        public static var operatingSystemKernelReleaseNumber: UnameCommandLineArgs { return UnameCommandLineArgs.r }
         
         //os kernel version string
         
         ///Returns the os kernel version string
         case v
         ///Returns the os kernel version string
-        public static var operatingSystemKernelVersionString: Self { .v }
+        public static var operatingSystemKernelVersionString: UnameCommandLineArgs { return UnameCommandLineArgs.v }
         
         
     }
@@ -151,7 +157,7 @@ public final class UnameReimplemented{
     ///
     ///NOTE: that the `p` argument is omitted when using the `a` arguments matching the behavior of the real command line tool.
     public static func uname(withCommandLineArgs args: [UnameCommandLineArgs] = [.defaultArg], forceNewFetch: Bool = false) -> [UnameCommandLineArgs: String]?{
-        guard let info = Self.uname(forceNewFetch) else{
+        guard let info = UnameReimplemented.uname(forceNewFetch) else{
             return nil
         }
         
@@ -221,7 +227,7 @@ public final class UnameReimplemented{
 }
 
 fileprivate extension Array where Element == UnameReimplemented.UnameCommandLineArgs{
-    var workingCopy: Self{
+    var workingCopy: [Element]{
         return self.contains(.a) ? UnameReimplemented.UnameCommandLineArgs.allEquivalent : self.removingDuplicates()
     }
 }

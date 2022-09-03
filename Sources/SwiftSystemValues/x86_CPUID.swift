@@ -25,9 +25,9 @@ public final class CPUID{
             self.queryLevel2 = queryLevel2
         }
         
-        public static var queryCache: [Self] = []
+        public static var queryCache: [Registers] = []
         
-        public func copy() -> Self {
+        public func copy() -> Registers {
             return .init(queryLevel1: queryLevel1, queryLevel2: queryLevel2, eax: eax, ebx: ebx, ecx: ecx, edx: edx)
         }
         
@@ -55,7 +55,7 @@ public final class CPUID{
         #endif
         
         ///Returns the current registers state after performing the cpuid function for the specified levels
-        public static func from(level: UInt32, extendedLevel: UInt32? = nil, doNotRecoverFromCache: Bool = false ) -> Self?{
+        public static func from(level: UInt32, extendedLevel: UInt32? = nil, doNotRecoverFromCache: Bool = false ) -> Registers?{
             
             #if (arch(x86_64) || arch(i386))
             let recover = recoverFromCache && !doNotRecoverFromCache
@@ -64,7 +64,7 @@ public final class CPUID{
             #endif
             
             if recover {
-                var ret: Self? = nil
+                var ret: Registers? = nil
                 
                 for data in queryCache where data.queryLevel1 == level && data.queryLevel2 == extendedLevel {
                     ret = data
@@ -89,7 +89,7 @@ public final class CPUID{
                 return nil
             }
             
-            let ret = Self.init(queryLevel1: level, queryLevel2: extendedLevel, eax: eax, ebx: ebx, ecx: ecx, edx: edx)
+            let ret = Registers.init(queryLevel1: level, queryLevel2: extendedLevel, eax: eax, ebx: ebx, ecx: ecx, edx: edx)
             
             if storeQueryInCache{
                 queryCache.append(ret)

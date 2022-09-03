@@ -22,12 +22,12 @@ public final class Sysctl: SysctlFetch{
         
         ///Gets is the current process is running as a native process for the current hw
         public static var proc_native: Bool? {
-            return Self.getBool("proc_native")
+            return getBool("proc_native")
         }
         
         ///gets if the current process is running as translated via rosetta or similar
         public static var proc_translated: Bool? {
-            return Self.getBool("proc_translated")
+            return getBool("proc_translated")
         }
     }
     #endif

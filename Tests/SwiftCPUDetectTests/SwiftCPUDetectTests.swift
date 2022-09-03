@@ -1,13 +1,13 @@
 
 import Foundation
 
-#if !os(watchOS) || swift(>=5.4) || canImport(XCTest)
+#if (!os(watchOS) || swift(>=5.4)) && canImport(XCTest)
 import XCTest
 @testable import SwiftCPUDetect
 @testable import SwiftSystemValues
 
-final class SwiftLinuxSysctlTests: XCTestCase {
-    func testExample() throws {
+final class SwiftCPUDetectTests: XCTestCase {
+    func testSysctl() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
@@ -150,7 +150,16 @@ final class SwiftLinuxSysctlTests: XCTestCase {
 
         print("[Test] Fetched Linux cpu info: \(cpuinfo_items ?? [[:]])")
     }
+    
+    static var allTests : [(String, (_: SwiftCPUDetectTests) -> () throws -> Void)] {
+        return [
+            ("testSysctl", testSysctl),
+            ("testCPUID", testCPUID),
+            ("testLinux", testLinux)
+        ]
+    }
     #endif
+    
     
 }
 #endif

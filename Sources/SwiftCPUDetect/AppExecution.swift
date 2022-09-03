@@ -21,7 +21,7 @@ public enum AppExecutionMode: Int32, Hashable, DetectProtocol{
     case emulated = 1
     
     ///Gets if the current process is running natively or emulated
-    public static func current() -> Self?{
+    public static func current() -> AppExecutionMode?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
             static var state: AppExecutionMode? = nil

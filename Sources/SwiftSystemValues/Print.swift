@@ -31,7 +31,7 @@ open class GeneralPrinter {
     }
     
     open class func errorPrint(_ str: Any){
-        Self.print("\(errorPrefix) \(str)")
+        GeneralPrinter.print("\(errorPrefix) \(str)")
     }
 }
 

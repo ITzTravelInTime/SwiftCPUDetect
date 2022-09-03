@@ -28,10 +28,10 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     case arm     = "arm"
     case arm64   = "arm64"
     
-    public typealias AppArchitectures = [Self]
+    public typealias AppArchitectures = [CpuArchitecture]
     
     ///Gets the cpu architecture used by the current process
-    public static func current() -> Self?{
+    public static func current() -> CpuArchitecture?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         struct MEM{
             static var state: CpuArchitecture? = nil
@@ -138,7 +138,7 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     }
     
     ///Gets the cpu architechure the current binary is using to run
-    public static func binaryCurrent() -> Self{
+    public static func binaryCurrent() -> CpuArchitecture{
         
         #if os(Linux)
             #if arch(x86_64h)
@@ -181,7 +181,7 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     }
     
     ///Gets the cpu architecture used by the current device
-    public static func machineCurrent() -> Self?{
+    public static func machineCurrent() -> CpuArchitecture?{
         guard let arch = current() else { return nil }
         
         #if os(macOS) || targetEnvironment(macCatalyst)
@@ -261,7 +261,7 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
     }
     
     ///Gets the generic processor family for the current cpu
-    public func genericProcessorType() -> Self{
+    public func genericProcessorType() -> CpuArchitecture{
         if self.isPPC(){
             return .ppc
         }
@@ -280,15 +280,13 @@ public enum CpuArchitecture: String, Hashable, DetectProtocol  {
 
 extension CpuArchitecture.AppArchitectures: DetectProtocol{
     
-    private struct MEM{
-        static var status: [CpuArchitecture]! = nil
-    }
+    private static var status: [CpuArchitecture]! = nil
     
     ///Returns the cpu architectures supported by the current program/app
-    public static func current() -> Self?{
+    public static func current() -> CpuArchitecture.AppArchitectures?{
         //stores the obtained value so useless re-detections are avoided since this value isn't supposed to change at execution time
         
-        if MEM.status == nil{
+        if status == nil{
             #if !os(Linux)
             var supportedArchs = [NSBundleExecutableArchitectureX86_64: CpuArchitecture.intel64, NSBundleExecutableArchitectureI386: CpuArchitecture.intel32, NSBundleExecutableArchitecturePPC: CpuArchitecture.ppc, NSBundleExecutableArchitecturePPC64: CpuArchitecture.ppc64, 12: CpuArchitecture.arm]
             
@@ -306,21 +304,21 @@ extension CpuArchitecture.AppArchitectures: DetectProtocol{
                 Printer.print("Listing cpu architectures supported by the current bundle/app: ")
             }
             
-            MEM.status = []
+            status = []
             
             for arch in supportedArchs{
                 if raw.contains(NSNumber(value: arch.key)){
-                    MEM.status!.append(arch.value)
+                    status!.append(arch.value)
                     Printer.print("    \(arch.value.rawValue)")
                 }
             }
             
             #else
-            MEM.status = [.binaryCurrent()]
+            status = [.binaryCurrent()]
             #endif
         }
         
-        return MEM.status
+        return status
     }
 }
 

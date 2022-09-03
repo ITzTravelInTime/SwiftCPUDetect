@@ -28,27 +28,27 @@ public extension Sysctl{
             
             ///Gets the number of threads of the current CPU
             public static var threads_count: UInt?{
-                return Self.getInteger("thread_count")
+                return getInteger("thread_count")
             }
             
             ///Gets the number of cores of the current CPU
             public static var cores_count: UInt?{
-                return Self.getInteger("core_count")
+                return getInteger("core_count")
             }
             
             ///Gets the brand name for the current CPU
             public static var brand_string: String?{
-                return Self.getString("brand_string")
+                return getString("brand_string")
             }
             
             ///Gets the number of cores for each CPU package in the system
             public static var cores_per_package: UInt?{
-                return Self.getInteger("cores_per_package")
+                return getInteger("cores_per_package")
             }
             
             ///Gets the number of cpu threads for each CPU package in the system
             public static var logical_per_package: UInt?{
-                return Self.getInteger("logical_per_package")
+                return getInteger("logical_per_package")
             }
             
             #if (arch(x86_64) || arch(i386))
@@ -56,45 +56,45 @@ public extension Sysctl{
             ///Gets a string containing the cpu family for the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var family: UInt?{
-                return Self.getInteger("family")
+                return getInteger("family")
             }
             
             ///Gets a string containing the cpu model for the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var model: UInt?{
-                return Self.getInteger("model")
+                return getInteger("model")
             }
             
             ///Gets a string containing the cpu stepping for the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var stepping: UInt?{
-                return Self.getInteger("stepping")
+                return getInteger("stepping")
             }
             
             ///Gets a string containing the cpu stepping for the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var extfamily: UInt?{
-                return Self.getInteger("extfamily")
+                return getInteger("extfamily")
             }
             
             ///Gets a string containing the cpu stepping for the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var extmodel: UInt?{
-                return Self.getInteger("extmodel")
+                return getInteger("extmodel")
             }
             
             ///Gets a string containing all the features supported by the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var features: String?{
                 //return sysctlMachdepCpuString("features", bufferSize: 512)
-                return Self.getString("features")
+                return getString("features")
             }
             
             ///Gets a string containing all the extra leaf7 features supported by the current CPU
             ///NOTE: This information is only available on intel Macs.
             public static var leaf7_features: String?{
                 //return sysctlMachdepCpuString("features", bufferSize: 512)
-                return Self.getString("leaf7_features")
+                return getString("leaf7_features")
             }
             
             ///Object to read `sysctl machdep.cpu.address_bits entries
